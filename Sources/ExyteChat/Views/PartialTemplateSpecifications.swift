@@ -9,7 +9,7 @@ import SwiftUI
 
 public extension ChatView where MessageContent == EmptyView {
 
-    init(messages: [Message],
+    init(messages: [any MessageProtocol],
          chatType: ChatType = .conversation,
          replyMode: ReplyMode = .quote,
          didSendMessage: @escaping (DraftMessage) -> Void,
@@ -28,7 +28,7 @@ public extension ChatView where MessageContent == EmptyView {
 
 public extension ChatView where InputViewContent == EmptyView {
 
-    init(messages: [Message],
+    init(messages: [any MessageProtocol],
          chatType: ChatType = .conversation,
          replyMode: ReplyMode = .quote,
          didSendMessage: @escaping (DraftMessage) -> Void,
@@ -47,7 +47,7 @@ public extension ChatView where InputViewContent == EmptyView {
 
 public extension ChatView where MenuAction == DefaultMessageMenuAction {
 
-    init(messages: [Message],
+    init(messages: [any MessageProtocol],
          chatType: ChatType = .conversation,
          replyMode: ReplyMode = .quote,
          didSendMessage: @escaping (DraftMessage) -> Void,
@@ -66,7 +66,7 @@ public extension ChatView where MenuAction == DefaultMessageMenuAction {
 
 public extension ChatView where MessageContent == EmptyView, InputViewContent == EmptyView {
 
-    init(messages: [Message],
+    init(messages: [any MessageProtocol],
          chatType: ChatType = .conversation,
          replyMode: ReplyMode = .quote,
          didSendMessage: @escaping (DraftMessage) -> Void,
@@ -83,7 +83,7 @@ public extension ChatView where MessageContent == EmptyView, InputViewContent ==
 
 public extension ChatView where InputViewContent == EmptyView, MenuAction == DefaultMessageMenuAction {
 
-    init(messages: [Message],
+    init(messages: [any MessageProtocol],
          chatType: ChatType = .conversation,
          replyMode: ReplyMode = .quote,
          didSendMessage: @escaping (DraftMessage) -> Void,
@@ -100,7 +100,7 @@ public extension ChatView where InputViewContent == EmptyView, MenuAction == Def
 
 public extension ChatView where MessageContent == EmptyView, MenuAction == DefaultMessageMenuAction {
 
-    init(messages: [Message],
+    init(messages: [any MessageProtocol],
          chatType: ChatType = .conversation,
          replyMode: ReplyMode = .quote,
          didSendMessage: @escaping (DraftMessage) -> Void,
@@ -117,7 +117,7 @@ public extension ChatView where MessageContent == EmptyView, MenuAction == Defau
 
 public extension ChatView where MessageContent == EmptyView, InputViewContent == EmptyView, MenuAction == DefaultMessageMenuAction {
 
-    init(messages: [Message],
+    init(messages: [any MessageProtocol],
          chatType: ChatType = .conversation,
          replyMode: ReplyMode = .quote,
          didSendMessage: @escaping (DraftMessage) -> Void,
