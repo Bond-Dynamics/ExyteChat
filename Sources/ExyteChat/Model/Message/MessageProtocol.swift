@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol MessageProtocol: Identifiable {
+public protocol MessageProtocol: Codable, Identifiable {
     var id: String { get set }
     var user: User { get set }
     var text: String { get set }
@@ -19,10 +19,10 @@ public protocol MessageProtocol: Identifiable {
     var triggerRedraw: UUID? { get set }
 }
 
-public protocol HasReply {
+public protocol HasReply: Codable {
     var replyMessage: ReplyMessage? { get set }
 }
 
-public protocol HasStatus {
+public protocol HasStatus: Codable {
     var status: Message.Status? { get set }
 }
