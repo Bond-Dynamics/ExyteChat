@@ -21,7 +21,7 @@ public enum ReplyMode: CaseIterable, Sendable {
     case answer // when replying to message A, new message with appear direclty below message A as a separate cell without duplicating message A in its body
 }
 
-public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction: MessageMenuAction>: View {
+public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction: MessageMenuAction, MessageData: MessageProtocol>: View {
     
     /// To build a custom message view use the following parameters passed by this closure:
     /// - message containing user, attachments, etc.
