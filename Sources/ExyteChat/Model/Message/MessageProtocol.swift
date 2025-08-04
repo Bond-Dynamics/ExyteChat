@@ -10,19 +10,19 @@ import Foundation
 public protocol MessageProtocol: Codable, Identifiable {
     var id: UUID { get }
     var user: User { get }
-    var text: String { get set }
-    var createdAt: Date { get set }
-    var attachments: [Attachment] { get set }
-    var reactions: [Reaction] { get set }
-    var giphyMediaId: String? { get set }
-    var recording: Recording? { get set }
-    var triggerRedraw: UUID? { get set }
+    var text: String { get }
+    var createdAt: Date { get }
+    var attachments: [Attachment] { get }
+    var reactions: [Reaction] { get }
+    var giphyMediaId: String? { get }
+    var recording: Recording? { get }
+    var triggerRedraw: UUID? { get }
 }
 
 public protocol HasReply: Codable {
-    var replyMessage: ReplyMessage? { get set }
+    var replyMessage: ReplyMessage? { get }
 }
 
 public protocol HasStatus: Codable {
-    var status: Message.Status? { get set }
+    var status: Message.Status? { get }
 }
