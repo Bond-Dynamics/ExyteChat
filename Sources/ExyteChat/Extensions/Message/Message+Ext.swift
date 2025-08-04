@@ -25,6 +25,6 @@ extension Message: Equatable {
 
 public extension Message {
     func toReplyMessage() -> ReplyMessage {
-        ReplyMessage(id: id, user: user, createdAt: createdAt, text: text, attachments: attachments, giphyMediaId: giphyMediaId, recording: recording, triggerRedraw: triggerRedraw)
+        ReplyMessage(id: id, user: user ?? .init(), createdAt: createdAt, text: text, attachments: attachments, giphyMediaId: giphyMediaId, recording: recording, triggerRedraw: triggerRedraw)
     }
 }

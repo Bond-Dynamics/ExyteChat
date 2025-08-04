@@ -11,7 +11,7 @@ extension MessageProtocol {
     func toReplyMessage(current userID: UUID) -> ReplyMessage {
         ReplyMessage(
             id: id,
-            user: user(current: userID),
+            user: user,
             createdAt: createdAt,
             text: text,
             attachments: attachments,
