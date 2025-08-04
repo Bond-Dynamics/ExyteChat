@@ -17,6 +17,7 @@ public protocol MessageProtocol: Codable, Identifiable {
     var giphyMediaId: String? { get }
     var recording: Recording? { get }
     var triggerRedraw: UUID? { get }
+    func user(current userID: UUID) -> User
 }
 
 public protocol HasReply: Codable {

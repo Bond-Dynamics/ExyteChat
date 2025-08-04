@@ -29,19 +29,19 @@ public enum AttachmentType: String, Codable, Sendable {
 }
 
 public struct Attachment: Codable, Identifiable, Hashable, Sendable {
-    public let id: String
+    public let id: UUID
     public let thumbnail: URL
     public let full: URL
     public let type: AttachmentType
 
-    public init(id: String, thumbnail: URL, full: URL, type: AttachmentType) {
+    public init(id: UUID, thumbnail: URL, full: URL, type: AttachmentType) {
         self.id = id
         self.thumbnail = thumbnail
         self.full = full
         self.type = type
     }
 
-    public init(id: String, url: URL, type: AttachmentType) {
+    public init(id: UUID, url: URL, type: AttachmentType) {
         self.init(id: id, thumbnail: url, full: url, type: type)
     }
 }

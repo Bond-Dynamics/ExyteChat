@@ -343,8 +343,8 @@ extension View {
 
 #if DEBUG
 struct MessageView_Preview: PreviewProvider {
-    static let stan = User(id: "stan", name: "Stan", avatarURL: nil, isCurrentUser: false)
-    static let john = User(id: "john", name: "John", avatarURL: nil, isCurrentUser: true)
+    static let stan = User(id: UUID(), name: "Stan", avatarURL: nil, isCurrentUser: false)
+    static let john = User(id: UUID(), name: "John", avatarURL: nil, isCurrentUser: true)
 
     static private var extraShortText = "Sss"
     static private var shortText = "Hi, buddy!"

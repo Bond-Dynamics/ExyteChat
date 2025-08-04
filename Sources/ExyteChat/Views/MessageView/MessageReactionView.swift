@@ -50,7 +50,7 @@ extension MessageView {
             ReactionBubble(
                 reaction: .init(
                     user: .init(
-                        id: "null",
+                        id: UUID(),
                         name: "",
                         avatarURL: nil,
                         isCurrentUser: containsReactionFromCurrentUser

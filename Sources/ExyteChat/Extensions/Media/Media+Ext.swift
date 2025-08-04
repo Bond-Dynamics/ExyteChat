@@ -6,9 +6,10 @@
 //
 
 import ExyteMediaPicker
+import Foundation
 
 extension Media {
-    func toAttachment(from id: String) async -> Attachment? {
+    func toAttachment(from id: UUID) async -> Attachment? {
         guard let thumbnailURL = await self.getThumbnailURL(), let fullURL = await self.getURL() else { return nil }
         return Attachment(
             id: id,

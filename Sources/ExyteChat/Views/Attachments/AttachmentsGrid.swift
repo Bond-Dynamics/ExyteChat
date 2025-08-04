@@ -13,7 +13,7 @@ struct AttachmentsGrid: View {
     private let onlyOne: Bool
 
     private let hidden: String?
-    private let showMoreAttachmentId: String?
+    private let showMoreAttachmentId: UUID?
 
     init(attachments: [Attachment], onTap: @escaping (Attachment) -> Void) {
         var toShow = attachments
@@ -96,7 +96,7 @@ struct AttachmentsPair {
     let right: Attachment
 
     var id: String {
-        left.id + "+" + right.id
+        left.id.uuidString + "+" + right.id.uuidString
     }
 }
 
@@ -136,11 +136,11 @@ extension Array where Element == Attachment {
 
 extension Attachment {
     static func randomImage() -> Attachment {
-        Attachment(id: UUID().uuidString, url: URL(string: "https://placeimg.com/640/480/sepia")!, type: .image)
+        Attachment(id: UUID(), url: URL(string: "https://placeimg.com/640/480/sepia")!, type: .image)
     }
     // TODO get video, not image
     static func randomVideo() -> Attachment {
-        Attachment(id: UUID().uuidString, url: URL(string: "https://placeimg.com/640/480/sepia")!, type: .video)
+        Attachment(id: UUID(), url: URL(string: "https://placeimg.com/640/480/sepia")!, type: .video)
     }
 }
 #endif

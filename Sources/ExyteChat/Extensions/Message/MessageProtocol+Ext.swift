@@ -8,10 +8,10 @@
 import Foundation
 
 extension MessageProtocol {
-    func toReplyMessage() -> ReplyMessage {
+    func toReplyMessage(current userID: UUID) -> ReplyMessage {
         ReplyMessage(
             id: id,
-            user: user,
+            user: user(current: userID),
             createdAt: createdAt,
             text: text,
             attachments: attachments,
@@ -22,6 +22,6 @@ extension MessageProtocol {
     }
     
     var time: String {
-        DateFormatter.timeFormatter.string(from: createdAt ?? Date())
+        DateFormatter.timeFormatter.string(from: createdAt)
     }
 }

@@ -403,7 +403,7 @@ internal struct InteriorRadialShadow: ViewModifier {
             currentReactions: [
                 Reaction(
                     user: .init(
-                        id: "123",
+                        id: UUID(uuidString: "cee4d4ec-8ea3-4986-802c-19988eac4d71")!,
                         name: "Tim",
                         avatarURL: nil,
                         isCurrentUser: true
@@ -412,7 +412,7 @@ internal struct InteriorRadialShadow: ViewModifier {
                 ),
                 Reaction(
                     user: .init(
-                        id: "123",
+                        id: UUID(uuidString: "cee4d4ec-8ea3-4986-802c-19988eac4d71")!,
                         name: "Tim",
                         avatarURL: nil,
                         isCurrentUser: true

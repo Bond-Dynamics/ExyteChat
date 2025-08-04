@@ -738,8 +738,8 @@ public extension ChatView {
 }
 
 #Preview {
-    let romeo = User(id: "romeo", name: "Romeo Montague", avatarURL: nil, isCurrentUser: true)
-    let juliet = User(id: "juliet", name: "Juliet Capulet", avatarURL: nil, isCurrentUser: false)
+    let romeo = User(id: UUID(), name: "Romeo Montague", avatarURL: nil, isCurrentUser: true)
+    let juliet = User(id: UUID(), name: "Juliet Capulet", avatarURL: nil, isCurrentUser: false)
 
     let monday = try! Date.iso8601Date.parse("2025-05-12")
     let tuesday = try! Date.iso8601Date.parse("2025-05-13")

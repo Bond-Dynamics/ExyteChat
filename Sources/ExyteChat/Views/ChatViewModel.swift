@@ -52,7 +52,7 @@ final class ChatViewModel: ObservableObject {
         case .copy:
             UIPasteboard.general.string = message.text
         case .reply:
-            inputViewModel?.attachments.replyMessage = message.toReplyMessage()
+                inputViewModel?.attachments.replyMessage = message.toReplyMessage(current: message.user.id)
             globalFocusState?.focus = .uuid(inputFieldId)
         case .edit(let saveClosure):
             inputViewModel?.text = message.text

@@ -58,6 +58,10 @@ public struct Message: MessageProtocol, HasReply, Identifiable, Hashable, Sendab
     
     public var triggerRedraw: UUID?
     
+    public func user(current profileID: UUID) -> User {
+        user
+    }
+    
     public init(
         id: UUID,
         user: User,
@@ -98,12 +102,12 @@ public struct Message: MessageProtocol, HasReply, Identifiable, Hashable, Sendab
             
             switch media.type {
                 case .image:
-                    return Attachment(id: UUID().uuidString, url: thumbnailURL, type: .image)
+                    return Attachment(id: UUID(), url: thumbnailURL, type: .image)
                 case .video:
                     guard let fullURL = await media.getURL() else {
                         return nil
                     }
-                    return Attachment(id: UUID().uuidString, thumbnail: thumbnailURL, full: fullURL, type: .video)
+                    return Attachment(id: UUID(), thumbnail: thumbnailURL, full: fullURL, type: .video)
             }
         }
         
