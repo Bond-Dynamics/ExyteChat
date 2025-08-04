@@ -41,13 +41,13 @@ final class ChatViewModel: ObservableObject {
         didSendMessage(message)
     }
 
-    func messageMenuAction() -> (MessageProtocol, DefaultMessageMenuAction) -> Void {
+    func messageMenuAction() -> (any MessageProtocol, DefaultMessageMenuAction) -> Void {
         { [weak self] message, action in
             self?.messageMenuActionInternal(message: message, action: action)
         }
     }
 
-    func messageMenuActionInternal(message: MessageProtocol, action: DefaultMessageMenuAction) {
+    func messageMenuActionInternal(message: any MessageProtocol, action: DefaultMessageMenuAction) {
         switch action {
         case .copy:
             UIPasteboard.general.string = message.text

@@ -9,11 +9,11 @@ public protocol MessageMenuAction: Equatable, CaseIterable {
     func title() -> String
     func icon() -> Image
     
-    static func menuItems(for message: MessageProtocol) -> [Self]
+    static func menuItems(for message: any MessageProtocol) -> [Self]
 }
 
 extension MessageMenuAction {
-    public static func menuItems(for message: MessageProtocol) -> [Self] {
+    public static func menuItems(for message: any MessageProtocol) -> [Self] {
         Self.allCases.map { $0 }
     }
 }

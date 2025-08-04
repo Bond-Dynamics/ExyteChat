@@ -20,7 +20,7 @@ public protocol ReactionDelegate {
     /// - Parameters:
     ///   - message: The `MessageProtocol` they reacted to
     ///   - reaction: The `DraftReaction` that should be sent / applied to the `MessageProtocol`
-    func didReact(to message: MessageProtocol, reaction: DraftReaction) -> Void
+    func didReact(to message: any MessageProtocol, reaction: DraftReaction) -> Void
     
     /// Determines whether or not the Sender can react to a given `MessageProtocol`
     /// - Parameter message: The `MessageProtocol` the Sender is interacting with
@@ -28,7 +28,7 @@ public protocol ReactionDelegate {
     ///
     /// - Note: Optional, defaults to `true`
     /// - Note: Called when Chat is preparing to show the MessageProtocol Menu
-    func canReact(to message: MessageProtocol) -> Bool
+    func canReact(to message: any MessageProtocol) -> Bool
     
     /// Allows for the configuration of the Reactions available to the Sender for a given `MessageProtocol`
     /// - Parameter message: The `MessageProtocol` the Sender is interacting with
@@ -36,7 +36,7 @@ public protocol ReactionDelegate {
     ///
     /// - Note: Optional, defaults to a standard set of emojis
     /// - Note: Called when Chat is preparing to show the MessageProtocol Menu
-    func reactions(for message: MessageProtocol) -> [ReactionType]?
+    func reactions(for message: any MessageProtocol) -> [ReactionType]?
     
     /// Whether or not the Sender should be able to search for an emoji using the Keyboard for a given `MessageProtocol`
     /// - Parameter message: The `MessageProtocol` the Sender is interacting with
@@ -44,7 +44,7 @@ public protocol ReactionDelegate {
     ///
     /// - Note: Optional, defaults to `true`
     /// - Note: Called when Chat is preparing to show the MessageProtocol Menu
-    func allowEmojiSearch(for message: MessageProtocol) -> Bool
+    func allowEmojiSearch(for message: any MessageProtocol) -> Bool
     
     /// Whether or not the MessageProtocol Menu should include a reaction overview at the top of the screen
     /// - Parameter message: The `MessageProtocol` the Sender is interacting with
@@ -52,33 +52,33 @@ public protocol ReactionDelegate {
     ///
     /// - Note: Optional, defaults to `true` when the message has one or more reactions.
     /// - Note: Called when Chat is preparing to show the MessageProtocol Menu
-    func shouldShowOverview(for message: MessageProtocol) -> Bool
+    func shouldShowOverview(for message: any MessageProtocol) -> Bool
 }
 
 public extension ReactionDelegate {
-    func canReact(to message: MessageProtocol) -> Bool { true }
-    func reactions(for message: MessageProtocol) -> [ReactionType]? { nil }
-    func allowEmojiSearch(for message: MessageProtocol) -> Bool { true }
-    func shouldShowOverview(for message:MessageProtocol) -> Bool { !message.reactions.isEmpty }
+    func canReact(to message: any MessageProtocol) -> Bool { true }
+    func reactions(for message: any MessageProtocol) -> [ReactionType]? { nil }
+    func allowEmojiSearch(for message: any MessageProtocol) -> Bool { true }
+    func shouldShowOverview(for message:any MessageProtocol) -> Bool { !message.reactions.isEmpty }
 }
 
 /// We use this implementation of ReactionDelegate for when the user wants to use the callback modifier instead of providing us with a dedicated delegate
 struct DefaultReactionConfiguration: ReactionDelegate {
     // Non optional didReact handler
-    var didReact: (MessageProtocol, DraftReaction) -> Void
+    var didReact: (any MessageProtocol, DraftReaction) -> Void
     
     // Optional handlers for further configuration
-    var canReact: ((MessageProtocol) -> Bool)? = nil
-    var reactions: ((MessageProtocol) -> [ReactionType]?)? = nil
-    var allowEmojiSearch: ((MessageProtocol) -> Bool)? = nil
-    var shouldShowOverview: ((MessageProtocol) -> Bool)? = nil
+    var canReact: ((any MessageProtocol) -> Bool)? = nil
+    var reactions: ((any MessageProtocol) -> [ReactionType]?)? = nil
+    var allowEmojiSearch: ((any MessageProtocol) -> Bool)? = nil
+    var shouldShowOverview: ((any MessageProtocol) -> Bool)? = nil
     
     init(
-        didReact: @escaping (MessageProtocol, DraftReaction) -> Void,
-        canReact: ((MessageProtocol) -> Bool)? = nil,
-        reactions: ((MessageProtocol) -> [ReactionType]?)? = nil,
-        allowEmojiSearch: ((MessageProtocol) -> Bool)? = nil,
-        shouldShowOverview: ((MessageProtocol) -> Bool)? = nil
+        didReact: @escaping (any MessageProtocol, DraftReaction) -> Void,
+        canReact: ((any MessageProtocol) -> Bool)? = nil,
+        reactions: ((any MessageProtocol) -> [ReactionType]?)? = nil,
+        allowEmojiSearch: ((any MessageProtocol) -> Bool)? = nil,
+        shouldShowOverview: ((any MessageProtocol) -> Bool)? = nil
     ) {
         self.didReact = didReact
         self.canReact = canReact
@@ -87,26 +87,26 @@ struct DefaultReactionConfiguration: ReactionDelegate {
         self.shouldShowOverview = shouldShowOverview
     }
     
-    func didReact(to message: MessageProtocol, reaction: DraftReaction) {
+    func didReact(to message: any MessageProtocol, reaction: DraftReaction) {
         didReact(message, reaction)
     }
     
-    func shouldShowOverview(for message: MessageProtocol) -> Bool {
+    func shouldShowOverview(for message: any MessageProtocol) -> Bool {
         if let shouldShowOverview { return shouldShowOverview(message) }
         else { return !message.reactions.isEmpty }
     }
     
-    func canReact(to message: MessageProtocol) -> Bool {
+    func canReact(to message: any MessageProtocol) -> Bool {
         if let canReact { return canReact(message) }
         else { return true }
     }
     
-    func reactions(for message: MessageProtocol) -> [ReactionType]? {
+    func reactions(for message: any MessageProtocol) -> [ReactionType]? {
         if let reactions { return reactions(message) }
         else { return nil }
     }
     
-    func allowEmojiSearch(for message: MessageProtocol) -> Bool {
+    func allowEmojiSearch(for message: any MessageProtocol) -> Bool {
         if let allowEmojiSearch { return allowEmojiSearch(message) }
         else { return true }
     }

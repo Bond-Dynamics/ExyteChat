@@ -9,7 +9,7 @@ import SwiftUI
 
 extension ChatView {
 
-    nonisolated static func mapMessages(_ messages: [MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessages(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
         let result: [MessagesSection]
         switch replyMode {
         case .quote:
@@ -21,7 +21,7 @@ extension ChatView {
         return result
     }
 
-    nonisolated static func mapMessagesQuoteModeReplies(_ messages: [MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessagesQuoteModeReplies(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
         let dates = Set(messages.map({ $0.createdAt.startOfDay() }))
             .sorted()
             .reversed()
@@ -39,7 +39,7 @@ extension ChatView {
         return result
     }
 
-    nonisolated static func mapMessagesCommentModeReplies(_ messages: [MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessagesCommentModeReplies(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
         let firstLevelMessages = messages.filter { m in
             (m as? HasReply)?.replyMessage == nil
         }
@@ -51,7 +51,7 @@ extension ChatView {
 
         for date in dates {
             let dayFirstLevelMessages = firstLevelMessages.filter({ $0.createdAt.isSameDay(date) })
-            var dayMessages = [MessageProtocol]() // insert second level in between first level
+            var dayMessages = [any MessageProtocol]() // insert second level in between first level
             for m in dayFirstLevelMessages {
                 var replies = getRepliesFor(id: m.id, messages: messages)
                 replies.sort { $0.createdAt < $1.createdAt }
@@ -73,7 +73,7 @@ extension ChatView {
         return result
     }
 
-    nonisolated static private func getRepliesFor(id: UUID, messages: [MessageProtocol]) -> [MessageProtocol] {
+    nonisolated static private func getRepliesFor(id: UUID, messages: [any MessageProtocol]) -> [any MessageProtocol] {
         messages.compactMap { m in
             if (m as? HasReply)?.replyMessage?.id == id {
                 return m
@@ -82,7 +82,7 @@ extension ChatView {
         }
     }
 
-    nonisolated static private func wrapSectionMessages(_ messages: [MessageProtocol], chatType: ChatType, replyMode: ReplyMode, isFirstSection: Bool, isLastSection: Bool) -> [MessageRow] {
+    nonisolated static private func wrapSectionMessages(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode, isFirstSection: Bool, isLastSection: Bool) -> [MessageRow] {
         messages
             .enumerated()
             .map {
