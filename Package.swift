@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Chat",
+    name: "ExyteChat",
     defaultLocalization: "en",
     platforms: [
         .iOS(.v17)
