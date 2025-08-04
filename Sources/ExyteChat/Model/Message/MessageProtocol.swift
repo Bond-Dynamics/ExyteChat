@@ -8,10 +8,10 @@
 import Foundation
 
 public protocol MessageProtocol: Codable, Identifiable {
-    var id: String { get set }
+    var id: UUID { get }
     var user: User { get set }
     var text: String { get set }
-    var createdAt: Date { get set }
+    var createdAt: Date? { get set }
     var attachments: [Attachment] { get set }
     var reactions: [Reaction] { get set }
     var giphyMediaId: String? { get set }
