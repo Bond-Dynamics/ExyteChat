@@ -8,7 +8,7 @@ import SwiftUI
 extension MessageView {
     
     @ViewBuilder
-    func reactionsView(_ message: Message, maxReactions: Int = 5) -> some View {
+    func reactionsView(_ message: any MessageProtocol, maxReactions: Int = 5) -> some View {
         let preparedReactions = prepareReactions(message: message, maxReactions: maxReactions)
         let overflowBubbleText = "+\(message.reactions.count - maxReactions + 1)"
         
@@ -75,7 +75,7 @@ extension MessageView {
     }
     
     /// Orders the reactions by most recent to oldest, reverses their layout based on alignment and determines if an overflow bubble is necessary
-    private func prepareReactions(message:Message, maxReactions:Int) -> PreparedReactions {
+    private func prepareReactions(message: any MessageProtocol, maxReactions:Int) -> PreparedReactions {
         guard maxReactions > 1, !message.reactions.isEmpty else {
             return .init(reactions: [], needsOverflowBubble: false, overflowContainsCurrentUser: false)
         }

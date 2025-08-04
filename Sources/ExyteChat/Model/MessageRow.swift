@@ -70,20 +70,26 @@ public enum PositionInChat {
 }
 
 struct MessageRow: Equatable {
-    let message: Message
+    let message: any MessageProtocol
     let positionInUserGroup: PositionInUserGroup
     let positionInMessagesSection: PositionInMessagesSection
     let commentsPosition: CommentsPosition?
 
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.id == rhs.id
-        && lhs.positionInUserGroup == rhs.positionInUserGroup
-        && lhs.positionInMessagesSection == rhs.positionInMessagesSection
-        && lhs.commentsPosition == rhs.commentsPosition
-        && lhs.message.status == rhs.message.status
-        && lhs.message.triggerRedraw == rhs.message.triggerRedraw
-        && lhs.message.text == rhs.message.text
-        && lhs.message.reactions == rhs.message.reactions
+        let hasStatus = if let lhs = lhs as? HasStatus, let rhs = rhs as? HasStatus {
+            lhs.status == rhs.status
+        } else {
+            true
+        }
+        
+        return lhs.id == rhs.id
+            && lhs.positionInUserGroup == rhs.positionInUserGroup
+            && lhs.positionInMessagesSection == rhs.positionInMessagesSection
+            && lhs.commentsPosition == rhs.commentsPosition
+            && hasStatus
+            && lhs.message.triggerRedraw == rhs.message.triggerRedraw
+            && lhs.message.text == rhs.message.text
+            && lhs.message.reactions == rhs.message.reactions
     }
 }
 

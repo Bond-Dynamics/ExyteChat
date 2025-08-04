@@ -519,7 +519,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             return conf
         }
         
-        private func toContextualAction(_ item: SwipeActionable, message:Message) -> UIContextualAction {
+        private func toContextualAction(_ item: SwipeActionable, message: any MessageProtocol) -> UIContextualAction {
             let ca = UIContextualAction(style: .normal, title: nil) { (action, sourceView, completionHandler) in
                 item.action(message, self.viewModel.messageMenuAction())
                 completionHandler(true)
@@ -614,7 +614,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
 
     func formatRow(_ row: MessageRow) -> String {
         String(
-            "id: \(row.id) text: \(row.message.text) status: \(row.message.status ?? .none) date: \(row.message.createdAt) position in user group: \(row.positionInUserGroup) position in messages section: \(row.positionInMessagesSection) trigger: \(row.message.triggerRedraw)"
+            "id: \(row.id) text: \(row.message.text) status: \((row.message as? HasStatus)?.status ?? .none) date: \(row.message.createdAt) position in user group: \(row.positionInUserGroup) position in messages section: \(row.positionInMessagesSection) trigger: \(row.message.triggerRedraw)"
         )
     }
 

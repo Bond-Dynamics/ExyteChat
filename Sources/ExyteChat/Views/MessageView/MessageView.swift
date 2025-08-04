@@ -13,7 +13,7 @@ struct MessageView: View {
 
     @ObservedObject var viewModel: ChatViewModel
 
-    let message: Message
+    let message: any MessageProtocol
     let positionInUserGroup: PositionInUserGroup
     let positionInMessagesSection: PositionInMessagesSection
     let chatType: ChatType
@@ -106,7 +106,7 @@ struct MessageView: View {
             }
 
             VStack(alignment: message.user.isCurrentUser ? .trailing : .leading, spacing: 2) {
-                if !isDisplayingMessageMenu, let reply = message.replyMessage?.toMessage() {
+                if !isDisplayingMessageMenu, let reply = (message as? HasReply)?.replyMessage?.toMessage() {
                     replyBubbleView(reply)
                         .opacity(theme.style.replyOpacity)
                         .padding(message.user.isCurrentUser ? .trailing : .leading, 10)
@@ -120,7 +120,7 @@ struct MessageView: View {
                 bubbleView(message)
             }
 
-            if message.user.isCurrentUser, let status = message.status {
+            if message.user.isCurrentUser, let status = (message as? HasStatus)?.status {
                 MessageStatusView(status: status) {
                     if case let .error(draft) = status {
                         viewModel.sendMessage(draft)
@@ -137,7 +137,7 @@ struct MessageView: View {
     }
 
     @ViewBuilder
-    func bubbleView(_ message: Message) -> some View {
+    func bubbleView(_ message: any MessageProtocol) -> some View {
         VStack(
             alignment: message.user.isCurrentUser ? .leading : .trailing,
             spacing: -bubbleSize.height / 3
@@ -230,7 +230,7 @@ struct MessageView: View {
     }
 
     @ViewBuilder
-    func attachmentsView(_ message: Message) -> some View {
+    func attachmentsView(_ message: any MessageProtocol) -> some View {
         AttachmentsGrid(attachments: message.attachments) {
             viewModel.presentAttachmentFullScreen($0)
         }
@@ -255,7 +255,7 @@ struct MessageView: View {
     }
 
     @ViewBuilder
-    func textWithTimeView(_ message: Message) -> some View {
+    func textWithTimeView(_ message: any MessageProtocol) -> some View {
         let messageView = MessageTextView(
             text: message.text, messageStyler: messageStyler,
             userType: message.user.type, shouldShowLinkPreview: shouldShowLinkPreview,
@@ -324,7 +324,7 @@ struct MessageView: View {
 extension View {
 
     @ViewBuilder
-    func bubbleBackground(_ message: Message, theme: ChatTheme, isReply: Bool = false) -> some View {
+    func bubbleBackground(_ message: any MessageProtocol, theme: ChatTheme, isReply: Bool = false) -> some View {
         let radius: CGFloat = !message.attachments.isEmpty ? 12 : 20
         let additionalMediaInset: CGFloat = message.attachments.count > 1 ? 2 : 0
         self

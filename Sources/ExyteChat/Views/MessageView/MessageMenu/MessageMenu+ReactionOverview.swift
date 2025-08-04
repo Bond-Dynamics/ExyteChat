@@ -9,7 +9,7 @@ struct ReactionOverview: View {
     
     @StateObject var viewModel: ChatViewModel
     
-    let message: Message
+    let message: MessageProtocol
     let width: CGFloat
     let backgroundColor: Color
     let padding: CGFloat = 16
@@ -25,7 +25,7 @@ struct ReactionOverview: View {
         ScrollView(.horizontal) {
             HStack(spacing: padding) {
                 Spacer()
-                ForEach( sortReactions() ) { reaction in
+                ForEach(sortReactions()) { reaction in
                     reactionUserView(reaction: reaction)
                         .padding(padding / 2)
                 }

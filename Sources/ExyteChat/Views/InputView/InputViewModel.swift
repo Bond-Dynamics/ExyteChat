@@ -58,11 +58,11 @@ final class InputViewModel: ObservableObject {
         }
     }
 
-    func send() {
+    func send(with id: String = "") {
         Task {
             await recorder.stopRecording()
             await recordingPlayer?.reset()
-            sendMessage()
+            sendMessage(with: id)
         }
     }
 
@@ -224,9 +224,10 @@ private extension InputViewModel {
 
 private extension InputViewModel {
 
-    func sendMessage() {
+    func sendMessage(with id: String) {
         showActivityIndicator = true
         let draft = DraftMessage(
+            id: id,
             text: self.text,
             medias: attachments.medias,
             giphyMedia: attachments.giphyMedia,

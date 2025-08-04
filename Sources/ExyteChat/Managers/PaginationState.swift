@@ -4,7 +4,7 @@
 
 import Foundation
 
-public typealias ChatPaginationClosure = @Sendable (Message) async -> Void
+public typealias ChatPaginationClosure = @Sendable (any MessageProtocol) async -> Void
 
 final actor PaginationHandler: ObservableObject {
     let handleClosure: ChatPaginationClosure

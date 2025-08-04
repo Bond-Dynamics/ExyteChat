@@ -14,7 +14,7 @@ final class ChatViewModel: ObservableObject {
 
     @Published var messageMenuRow: MessageRow?
     
-    /// The messages frame that is currently being rendered in the Message Menu
+    /// The messages frame that is currently being rendered in the MessageProtocol Menu
     /// - Note: Used to further refine a messages frame (instead of using the cell boundary), mainly used for positioning reactions
     @Published var messageFrame: CGRect = .zero
     
@@ -41,13 +41,13 @@ final class ChatViewModel: ObservableObject {
         didSendMessage(message)
     }
 
-    func messageMenuAction() -> (Message, DefaultMessageMenuAction) -> Void {
+    func messageMenuAction() -> (MessageProtocol, DefaultMessageMenuAction) -> Void {
         { [weak self] message, action in
             self?.messageMenuActionInternal(message: message, action: action)
         }
     }
 
-    func messageMenuActionInternal(message: Message, action: DefaultMessageMenuAction) {
+    func messageMenuActionInternal(message: MessageProtocol, action: DefaultMessageMenuAction) {
         switch action {
         case .copy:
             UIPasteboard.general.string = message.text

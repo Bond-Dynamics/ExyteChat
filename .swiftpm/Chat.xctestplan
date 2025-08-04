@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "518B7B89-93D3-423A-B5B0-E07E5C07B7B7",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "ExyteChatTests",
+        "name" : "ExyteChatTests"
+      }
+    }
+  ],
+  "version" : 1
+}

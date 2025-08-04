@@ -9,11 +9,7 @@ import SwiftUI
 
 extension ChatView {
 
-    nonisolated static func mapMessages(_ messages: [Message], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
-        guard messages.hasUniqueIDs() else {
-            fatalError("Messages can not have duplicate ids, please make sure every message gets a unique id")
-        }
-
+    nonisolated static func mapMessages(_ messages: [MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
         let result: [MessagesSection]
         switch replyMode {
         case .quote:
@@ -25,7 +21,7 @@ extension ChatView {
         return result
     }
 
-    nonisolated static func mapMessagesQuoteModeReplies(_ messages: [Message], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessagesQuoteModeReplies(_ messages: [MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
         let dates = Set(messages.map({ $0.createdAt.startOfDay() }))
             .sorted()
             .reversed()
@@ -43,9 +39,9 @@ extension ChatView {
         return result
     }
 
-    nonisolated static func mapMessagesCommentModeReplies(_ messages: [Message], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessagesCommentModeReplies(_ messages: [MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
         let firstLevelMessages = messages.filter { m in
-            m.replyMessage == nil
+            (m as? HasReply)?.replyMessage == nil
         }
 
         let dates = Set(firstLevelMessages.map({ $0.createdAt.startOfDay() }))
@@ -55,7 +51,7 @@ extension ChatView {
 
         for date in dates {
             let dayFirstLevelMessages = firstLevelMessages.filter({ $0.createdAt.isSameDay(date) })
-            var dayMessages = [Message]() // insert second level in between first level
+            var dayMessages = [MessageProtocol]() // insert second level in between first level
             for m in dayFirstLevelMessages {
                 var replies = getRepliesFor(id: m.id, messages: messages)
                 replies.sort { $0.createdAt < $1.createdAt }
@@ -77,16 +73,16 @@ extension ChatView {
         return result
     }
 
-    nonisolated static private func getRepliesFor(id: String, messages: [Message]) -> [Message] {
+    nonisolated static private func getRepliesFor(id: String, messages: [MessageProtocol]) -> [MessageProtocol] {
         messages.compactMap { m in
-            if m.replyMessage?.id == id {
+            if (m as? HasReply)?.replyMessage?.id == id {
                 return m
             }
             return nil
         }
     }
 
-    nonisolated static private func wrapSectionMessages(_ messages: [Message], chatType: ChatType, replyMode: ReplyMode, isFirstSection: Bool, isLastSection: Bool) -> [MessageRow] {
+    nonisolated static private func wrapSectionMessages(_ messages: [MessageProtocol], chatType: ChatType, replyMode: ReplyMode, isFirstSection: Bool, isLastSection: Bool) -> [MessageRow] {
         messages
             .enumerated()
             .map {
@@ -128,14 +124,14 @@ extension ChatView {
                         positionInMessagesSection: positionInMessagesSection, commentsPosition: nil)
                 }
 
-                let nextMessageIsAReply = nextMessage?.replyMessage != nil
-                let nextMessageIsFirstLevel = nextMessage?.replyMessage == nil
-                let prevMessageIsFirstLevel = prevMessage?.replyMessage == nil
+                let nextMessageIsAReply = (nextMessage as? HasReply)?.replyMessage != nil
+                let nextMessageIsFirstLevel = (nextMessage as? HasReply)?.replyMessage == nil
+                let prevMessageIsFirstLevel = (prevMessage as? HasReply)?.replyMessage == nil
 
                 let positionInComments: PositionInCommentsGroup
-                if message.replyMessage == nil && !nextMessageIsAReply {
+                if (message as? HasReply)?.replyMessage == nil && !nextMessageIsAReply {
                     positionInComments = .singleFirstLevelPost
-                } else if message.replyMessage == nil && nextMessageIsAReply {
+                } else if (message as? HasReply)?.replyMessage == nil && nextMessageIsAReply {
                     positionInComments = .firstLevelPostWithComments
                 } else if nextMessageIsFirstLevel {
                     positionInComments = .lastComment
