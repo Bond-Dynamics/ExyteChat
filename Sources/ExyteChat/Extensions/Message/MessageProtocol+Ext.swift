@@ -22,6 +22,6 @@ extension MessageProtocol {
     }
     
     var time: String {
-        DateFormatter.timeFormatter.string(from: createdAt)
+        DateFormatter.timeFormatter.string(from: createdAt ?? Date())
     }
 }

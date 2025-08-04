@@ -94,8 +94,8 @@ struct MessageRow: Equatable {
 }
 
 extension MessageRow: Identifiable {
-    public typealias ID = String
-    public var id: String {
+    public typealias ID = UUID
+    public var id: UUID {
         return message.id
     }
 }

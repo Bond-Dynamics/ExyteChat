@@ -7,7 +7,7 @@ import GiphyUISDK
 import ExyteMediaPicker
 
 public struct DraftMessage: MessageProtocol, HasReply, Codable, Sendable {
-    public var id: String
+    public var id: UUID
     public var user: User = .init()
     public var text: String
     public var attachments: [Attachment] = []
@@ -22,7 +22,7 @@ public struct DraftMessage: MessageProtocol, HasReply, Codable, Sendable {
     public var triggerRedraw: UUID?
     
     public init(
-        id: String,
+        id: UUID,
         text: String,
         medias: [Media],
         giphyMedia: GPHMedia?,

@@ -17,7 +17,7 @@ public struct ReplyMessage: MessageProtocol, Codable, Identifiable, Hashable, Se
         lhs.recording == rhs.recording
     }
 
-    public var id: String
+    public var id: UUID
     public var user: User
     public var createdAt: Date
     public var text: String
@@ -28,7 +28,7 @@ public struct ReplyMessage: MessageProtocol, Codable, Identifiable, Hashable, Se
     public var triggerRedraw: UUID?
 
     public init(
-        id: String,
+        id: UUID,
         user: User,
         createdAt: Date,
         text: String = "",

@@ -58,7 +58,7 @@ final class InputViewModel: ObservableObject {
         }
     }
 
-    func send(with id: String = "") {
+    func send(with id: UUID = UUID()) {
         Task {
             await recorder.stopRecording()
             await recordingPlayer?.reset()
@@ -224,7 +224,7 @@ private extension InputViewModel {
 
 private extension InputViewModel {
 
-    func sendMessage(with id: String) {
+    func sendMessage(with id: UUID) {
         showActivityIndicator = true
         let draft = DraftMessage(
             id: id,

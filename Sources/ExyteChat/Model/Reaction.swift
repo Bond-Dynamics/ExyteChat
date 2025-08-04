@@ -10,7 +10,7 @@ public enum ReactionType: Codable, Equatable, Hashable, Sendable {
     //case sticker(Image / Giphy / Memoji)
     //case other...
     
-    var toString:String {
+    var toString: String {
         switch self {
         case .emoji(let emoji):
             return emoji
@@ -19,13 +19,13 @@ public enum ReactionType: Codable, Equatable, Hashable, Sendable {
 }
 
 public struct Reaction: Codable, Identifiable, Hashable, Sendable {
-    public let id: String
+    public let id: UUID
     public let user: User
     public let createdAt: Date
     public let type: ReactionType
     public var status: Status
 
-    public init(id: String = UUID().uuidString, user: User, createdAt: Date = .now, type: ReactionType, status: Status = .sending) {
+    public init(id: UUID = UUID(), user: User, createdAt: Date = .now, type: ReactionType, status: Status = .sending) {
         self.id = id
         self.user = user
         self.createdAt = createdAt
@@ -50,12 +50,12 @@ extension Reaction {
 }
 
 public struct DraftReaction: Codable, Identifiable, Hashable, Sendable {
-    public let id: String
-    public let messageID: String
+    public let id: UUID
+    public let messageID: UUID
     public let createdAt: Date
     public let type: ReactionType
 
-    public init(id: String = UUID().uuidString, messageID: String, createdAt: Date = .now, type: ReactionType) {
+    public init(id: UUID = UUID(), messageID: UUID, createdAt: Date = .now, type: ReactionType) {
         self.id = id
         self.messageID = messageID
         self.createdAt = createdAt

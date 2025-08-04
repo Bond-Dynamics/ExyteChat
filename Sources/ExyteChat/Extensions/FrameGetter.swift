@@ -78,7 +78,7 @@ extension View {
 }
 
 actor MessageMenuPreferenceKey: PreferenceKey {
-    typealias Value = [String: CGRect]
+    typealias Value = [UUID: CGRect]
 
     static var defaultValue: Value = [:]
 
@@ -88,7 +88,7 @@ actor MessageMenuPreferenceKey: PreferenceKey {
 }
 
 struct MessageMenuPreferenceViewSetter: View {
-    let id: String
+    let id: UUID
 
     var body: some View {
         GeometryReader { geometry in

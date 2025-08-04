@@ -351,7 +351,7 @@ struct MessageView_Preview: PreviewProvider {
     static private var longText = "Hello hello hello hello hello hello hello hello hello hello hello hello hello\n hello hello hello hello d d d d d d d d"
 
     static private var replyedMessage = Message(
-        id: UUID().uuidString,
+        id: UUID(),
         user: stan,
         status: .read,
         text: longText,
@@ -374,7 +374,7 @@ struct MessageView_Preview: PreviewProvider {
     )
 
     static private var message = Message(
-        id: UUID().uuidString,
+        id: UUID(),
         user: stan,
         status: .read,
         text: shortText,
@@ -382,7 +382,7 @@ struct MessageView_Preview: PreviewProvider {
     )
 
     static private var shortMessage = Message(
-        id: UUID().uuidString,
+        id: UUID(),
         user: stan,
         status: .read,
         text: extraShortText

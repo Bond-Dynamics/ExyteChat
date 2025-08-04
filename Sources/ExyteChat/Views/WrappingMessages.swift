@@ -73,7 +73,7 @@ extension ChatView {
         return result
     }
 
-    nonisolated static private func getRepliesFor(id: String, messages: [MessageProtocol]) -> [MessageProtocol] {
+    nonisolated static private func getRepliesFor(id: UUID, messages: [MessageProtocol]) -> [MessageProtocol] {
         messages.compactMap { m in
             if (m as? HasReply)?.replyMessage?.id == id {
                 return m

@@ -42,7 +42,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
     let messageLinkPreviewLimit: Int
     let messageFont: UIFont
     let sections: [MessagesSection]
-    let ids: [String]
+    let ids: [UUID]
     let listSwipeActions: ListSwipeActions
 
     @State var isScrolledToTop = false
@@ -404,7 +404,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
                 }
             }
         }
-        let ids: [String]
+        let ids: [UUID]
         let mainBackgroundColor: Color
         let listSwipeActions: ListSwipeActions
 
@@ -420,7 +420,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             messageStyler: @escaping (String) -> AttributedString,
             shouldShowLinkPreview: @escaping (URL) -> Bool, showMessageTimeView: Bool,
             messageLinkPreviewLimit: Int, messageFont: UIFont, sections: [MessagesSection],
-            ids: [String], mainBackgroundColor: Color, paginationTargetIndexPath: IndexPath? = nil,
+            ids: [UUID], mainBackgroundColor: Color, paginationTargetIndexPath: IndexPath? = nil,
             listSwipeActions: ListSwipeActions
         ) {
             self.viewModel = viewModel

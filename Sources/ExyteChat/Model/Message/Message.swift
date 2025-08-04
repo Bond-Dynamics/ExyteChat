@@ -44,7 +44,7 @@ public struct Message: MessageProtocol, HasReply, Identifiable, Hashable, Sendab
         }
     }
     
-    public var id: String
+    public var id: UUID
     public var user: User
     public var status: Status?
     public var createdAt: Date
@@ -59,10 +59,10 @@ public struct Message: MessageProtocol, HasReply, Identifiable, Hashable, Sendab
     public var triggerRedraw: UUID?
     
     public init(
-        id: String,
+        id: UUID,
         user: User,
         status: Status? = nil,
-        createdAt: Date = Date(),
+        createdAt: Date = .now,
         text: String = "",
         attachments: [Attachment] = [],
         giphyMediaId: String? = nil,
@@ -86,7 +86,7 @@ public struct Message: MessageProtocol, HasReply, Identifiable, Hashable, Sendab
     }
     
     public static func makeMessage(
-        id: String,
+        id: UUID,
         user: User,
         status: Status? = nil,
         draft: DraftMessage
