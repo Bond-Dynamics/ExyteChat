@@ -16,8 +16,8 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
     typealias MessageBuilderClosure = ChatView<MessageContent, InputView, DefaultMessageMenuAction, Message>.MessageBuilderClosure
 
     @Environment(\.chatTheme) var theme
-
-    @ObservedObject var viewModel: ChatViewModel
+    @Environment(\.chatViewModel) var viewModel
+    
     @ObservedObject var inputViewModel: InputViewModel
 
     @Binding var isScrolledToBottom: Bool
@@ -361,7 +361,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
-            viewModel: viewModel, inputViewModel: inputViewModel,
+            inputViewModel: inputViewModel,
             isScrolledToBottom: $isScrolledToBottom, isScrolledToTop: $isScrolledToTop,
             messageBuilder: messageBuilder, mainHeaderBuilder: mainHeaderBuilder,
             headerBuilder: headerBuilder, type: type, showDateHeaders: showDateHeaders,
@@ -375,8 +375,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
     }
 
     class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
-
-        @ObservedObject var viewModel: ChatViewModel
+        @Environment(\.chatViewModel) var viewModel
         @ObservedObject var inputViewModel: InputViewModel
 
         @Binding var isScrolledToBottom: Bool
@@ -411,7 +410,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
         private let impactGenerator = UIImpactFeedbackGenerator(style: .heavy)
 
         init(
-            viewModel: ChatViewModel, inputViewModel: InputViewModel,
+            inputViewModel: InputViewModel,
             isScrolledToBottom: Binding<Bool>, isScrolledToTop: Binding<Bool>,
             messageBuilder: MessageBuilderClosure?, mainHeaderBuilder: (() -> AnyView)?,
             headerBuilder: ((Date) -> AnyView)?, type: ChatType, showDateHeaders: Bool,
@@ -423,7 +422,6 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             ids: [UUID], mainBackgroundColor: Color, paginationTargetIndexPath: IndexPath? = nil,
             listSwipeActions: ListSwipeActions
         ) {
-            self.viewModel = viewModel
             self.inputViewModel = inputViewModel
             self._isScrolledToBottom = isScrolledToBottom
             self._isScrolledToTop = isScrolledToTop
@@ -568,7 +566,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
             let row = sections[indexPath.section].rows[indexPath.row]
             tableViewCell.contentConfiguration = UIHostingConfiguration {
                 ChatMessageView(
-                    viewModel: viewModel, messageBuilder: messageBuilder, row: row, chatType: type,
+                    messageBuilder: messageBuilder, row: row, chatType: type,
                     avatarSize: avatarSize, tapAvatarClosure: tapAvatarClosure,
                     messageStyler: messageStyler, shouldShowLinkPreview: shouldShowLinkPreview,
                     isDisplayingMessageMenu: false, showMessageTimeView: showMessageTimeView,

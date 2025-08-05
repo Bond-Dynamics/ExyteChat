@@ -137,6 +137,7 @@ struct MessageView: View {
 
     @ViewBuilder
     func bubbleView(_ message: any MessageProtocol) -> some View {
+        @Bindable var bindableVM = viewModel
         VStack(
             alignment: message.user(current: viewModel.currentUserID).isCurrentUser ? .leading : .trailing,
             spacing: -bubbleSize.height / 3
@@ -174,7 +175,7 @@ struct MessageView: View {
             .zIndex(0)
         }
         .applyIf(isDisplayingMessageMenu) {
-            $0.frameGetter(.constant(viewModel.messageFrame))
+            $0.frameGetter($bindableVM.messageFrame)
         }
     }
 

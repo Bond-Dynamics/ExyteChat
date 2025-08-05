@@ -7,17 +7,18 @@ import Combine
 import UIKit
 
 @MainActor
-public final class ChatViewModel: ObservableObject {
+@Observable
+public final class ChatViewModel {
 
-    @Published private(set) var currentUserID: UUID = UUID()
-    @Published private(set) var fullscreenAttachmentItem: Optional<Attachment> = nil
-    @Published var fullscreenAttachmentPresented = false
+    private(set) var currentUserID: UUID = UUID()
+    private(set) var fullscreenAttachmentItem: Optional<Attachment> = nil
+    var fullscreenAttachmentPresented = false
 
-    @Published var messageMenuRow: MessageRow?
+    var messageMenuRow: MessageRow?
     
     /// The messages frame that is currently being rendered in the MessageProtocol Menu
     /// - Note: Used to further refine a messages frame (instead of using the cell boundary), mainly used for positioning reactions
-    @Published var messageFrame: CGRect = .zero
+    var messageFrame: CGRect = .zero
     
     /// Provides a mechanism to issue haptic feedback to the user
     /// - Note: Used when launching the MessageMenu

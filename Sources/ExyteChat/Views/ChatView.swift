@@ -169,11 +169,12 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     }
     
     public var body: some View {
+        @Bindable var bindableVM = viewModel
         mainView
             .background(chatBackground())
             .environmentObject(keyboardState)
         
-            .fullScreenCover(isPresented: .constant(viewModel.fullscreenAttachmentPresented)) {
+            .fullScreenCover(isPresented: $bindableVM.fullscreenAttachmentPresented) {
                 let attachments = sections.flatMap { section in section.rows.flatMap { $0.message.attachments } }
                 let index = attachments.firstIndex { $0.id == viewModel.fullscreenAttachmentItem?.id }
                 
@@ -318,8 +319,8 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     
     @ViewBuilder
     var list: some View {
+        @Bindable var bindableVM = viewModel
         UIList(
-            viewModel: viewModel,
             inputViewModel: inputViewModel,
             isScrolledToBottom: $isScrolledToBottom,
             shouldScrollToTop: $shouldScrollToTop,
@@ -350,7 +351,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
         .onStatusBarTap {
             shouldScrollToTop()
         }
-        .transparentNonAnimatingFullScreenCover(item: .constant(viewModel.messageMenuRow)) {
+        .transparentNonAnimatingFullScreenCover(item: $bindableVM.messageMenuRow) {
             if let row = viewModel.messageMenuRow {
                 messageMenu(row)
                     .onAppear(perform: showMessageMenu)
@@ -429,7 +430,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
             )
         ) {
             ChatMessageView(
-                viewModel: viewModel, messageBuilder: messageBuilder, row: row, chatType: type,
+                messageBuilder: messageBuilder, row: row, chatType: type,
                 avatarSize: avatarSize, tapAvatarClosure: nil, messageStyler: messageStyler,
                 shouldShowLinkPreview: shouldShowLinkPreview,
                 isDisplayingMessageMenu: true, showMessageTimeView: showMessageTimeView,
