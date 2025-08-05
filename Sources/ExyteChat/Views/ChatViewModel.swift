@@ -39,7 +39,9 @@ public final class ChatViewModel: ObservableObject {
     }
     
     func setCurrentUserID(_ userID: UUID) {
-        self.currentUserID = userID
+        DispatchQueue.main.async { [self] in
+            self.currentUserID = userID
+        }
     }
 
     func sendMessage(_ message: DraftMessage) {
