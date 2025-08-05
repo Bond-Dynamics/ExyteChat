@@ -21,6 +21,11 @@ public extension EnvironmentValues {
         get { self[GiphyConfigurationKey.self] }
         set { self[GiphyConfigurationKey.self] = newValue }
     }
+    
+    var chatViewModel: ChatViewModel {
+        get { self[ChatViewModelKey.self] }
+        set { self[ChatViewModelKey.self] = newValue }
+    }
     #endif
 }
 
@@ -32,6 +37,10 @@ public extension EnvironmentValues {
 
 public struct GiphyConfigurationKey: EnvironmentKey {
     public static let defaultValue = GiphyConfiguration()
+}
+
+public struct ChatViewModelKey: EnvironmentKey {
+    public static let defaultValue = ChatViewModel()
 }
 #endif
 

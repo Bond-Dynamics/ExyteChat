@@ -72,6 +72,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.chatTheme) private var theme
+    @Environment(\.chatViewModel) var viewModel
     @Environment(\.giphyConfig) private var giphyConfig
     
     // MARK: - Parameters
@@ -128,7 +129,6 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     var recorderSettings: RecorderSettings = RecorderSettings()
     var listSwipeActions: ListSwipeActions = ListSwipeActions()
     
-    @StateObject private var viewModel = ChatViewModel()
     @StateObject private var inputViewModel = InputViewModel()
     @StateObject private var globalFocusState = GlobalFocusState()
     @StateObject private var networkMonitor = NetworkMonitor()
@@ -155,11 +155,12 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                 messageBuilder: @escaping MessageBuilderClosure,
                 inputViewBuilder: @escaping InputViewBuilderClosure,
                 messageMenuAction: MessageMenuActionClosure?,
-                localization: ChatLocalization) {
+                localization: ChatLocalization,
+                currentUserID: UUID) {
         self.type = chatType
         self.didSendMessage = didSendMessage
         self.reactionDelegate = reactionDelegate
-        self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode)
+        self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         self.ids = messages.map { $0.id }
         self.messageBuilder = messageBuilder
         self.inputViewBuilder = inputViewBuilder
@@ -172,7 +173,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
             .background(chatBackground())
             .environmentObject(keyboardState)
         
-            .fullScreenCover(isPresented: $viewModel.fullscreenAttachmentPresented) {
+            .fullScreenCover(isPresented: .constant(viewModel.fullscreenAttachmentPresented)) {
                 let attachments = sections.flatMap { section in section.rows.flatMap { $0.message.attachments } }
                 let index = attachments.firstIndex { $0.id == viewModel.fullscreenAttachmentItem?.id }
                 
@@ -349,7 +350,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
         .onStatusBarTap {
             shouldScrollToTop()
         }
-        .transparentNonAnimatingFullScreenCover(item: $viewModel.messageMenuRow) {
+        .transparentNonAnimatingFullScreenCover(item: .constant(viewModel.messageMenuRow)) {
             if let row = viewModel.messageMenuRow {
                 messageMenu(row)
                     .onAppear(perform: showMessageMenu)
@@ -412,7 +413,6 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
         let cellFrame = cellFrames[row.id] ?? .zero
 
         return MessageMenu(
-            viewModel: viewModel,
             isShowingMenu: $isShowingMenu,
             message: row.message,
             cellFrame: cellFrame,
@@ -445,7 +445,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     private func menuAlignment(_ message: any MessageProtocol, chatType: ChatType) -> MessageMenuAlignment {
         switch chatType {
         case .conversation:
-            return message.user.isCurrentUser ? .right : .left
+                return message.user(current: viewModel.currentUserID).isCurrentUser ? .right : .left
         case .comments:
             return .left
         }
@@ -786,5 +786,5 @@ public extension ChatView {
         Message(
             id: UUID(), user: juliet, status: .sent, createdAt: tuesday,
             text: "That I shall say 'Good night' till it be morrow"),
-    ]) { draft in }
+    ], currentUserID: UUID()) { draft in }
 }

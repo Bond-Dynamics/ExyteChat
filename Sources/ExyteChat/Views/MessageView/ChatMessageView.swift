@@ -40,7 +40,6 @@ struct ChatMessageView<MessageContent: View>: View {
                     }
             } else {
                 MessageView(
-                    viewModel: viewModel,
                     message: row.message,
                     positionInUserGroup: row.positionInUserGroup,
                     positionInMessagesSection: row.positionInMessagesSection,

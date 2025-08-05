@@ -9,14 +9,14 @@ import Foundation
 
 public protocol MessageProtocol: Codable, Identifiable {
     var id: UUID { get }
-    var user: User { get set }
-    var text: String { get set }
+    var text: String { get }
     var createdAt: Date { get }
-    var attachments: [Attachment] { get set }
-    var reactions: [Reaction] { get set }
+    var attachments: [Attachment] { get }
+    var reactions: [Reaction] { get }
     var giphyMediaId: String? { get }
     var recording: Recording? { get }
     var triggerRedraw: UUID? { get }
+    func user(current userID: UUID) -> User
 }
 
 public protocol HasReply: Codable {

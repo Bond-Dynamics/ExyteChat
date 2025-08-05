@@ -23,9 +23,9 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
 
     @Environment(\.chatTheme) private var theme
     @Environment(\.dismiss) var dismiss
+    @Environment(\.chatViewModel) var viewModel
     
     @StateObject private var keyboardState = KeyboardState()
-    @StateObject var viewModel: ChatViewModel
     
     @Binding var isShowingMenu: Bool
     
@@ -156,12 +156,17 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
             
             // Reaction Overview Rectangle
             if reactionOverviewIsVisible, case .vStack = messageMenuStyle {
-                ReactionOverview(viewModel: viewModel, message: message, width: reactionOverviewWidth, backgroundColor: theme.colors.messageFriendBG, inScrollView: false)
-                    .frame(width: reactionOverviewWidth)
-                    .maxHeightGetter($reactionOverviewHeight)
-                    .offset(y: UIApplication.safeArea.top)
-                    .transition(defaultTransition)
-                    .opacity(messageMenuOpacity)
+                ReactionOverview(
+                    message: message,
+                    width: reactionOverviewWidth,
+                    backgroundColor: theme.colors.messageFriendBG,
+                    inScrollView: false
+                )
+                .frame(width: reactionOverviewWidth)
+                .maxHeightGetter($reactionOverviewHeight)
+                .offset(y: UIApplication.safeArea.top)
+                .transition(defaultTransition)
+                .opacity(messageMenuOpacity)
             }
             
             // Some views to help debug layout and animations
@@ -445,7 +450,7 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
     func messageMenuView() -> some View {
         VStack(spacing: verticalSpacing) {
             if reactionOverviewIsVisible, case .scrollView = messageMenuStyle {
-                ReactionOverview(viewModel: viewModel, message: message, width: reactionOverviewWidth, backgroundColor: theme.colors.messageFriendBG, inScrollView: true)
+                ReactionOverview(message: message, width: reactionOverviewWidth, backgroundColor: theme.colors.messageFriendBG, inScrollView: true)
                     .frame(width: reactionOverviewWidth)
                     .maxHeightGetter($reactionOverviewHeight)
                     //.offset(y: safeAreaInsets.top)
@@ -455,7 +460,6 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
             
             if reactionSelectionIsVisible {
                 ReactionSelectionView(
-                    viewModel: viewModel,
                     backgroundColor: theme.colors.messageFriendBG,
                     selectedColor: theme.colors.messageMyBG,
                     animation: .bouncy(duration: animationDuration),

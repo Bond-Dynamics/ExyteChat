@@ -27,7 +27,7 @@ public struct ReplyMessage: MessageProtocol, Codable, Identifiable, Hashable, Se
     public var recording: Recording?
     public var triggerRedraw: UUID?
     
-    public func user(current profileID: UUID) -> User {
+    public func user(current userID: UUID) -> User {
         user
     }
 

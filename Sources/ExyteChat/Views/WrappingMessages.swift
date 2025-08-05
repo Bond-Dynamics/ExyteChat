@@ -9,19 +9,19 @@ import SwiftUI
 
 extension ChatView {
 
-    nonisolated static func mapMessages(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessages(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode, currentUserID: UUID) -> [MessagesSection] {
         let result: [MessagesSection]
         switch replyMode {
         case .quote:
-            result = mapMessagesQuoteModeReplies(messages, chatType: chatType, replyMode: replyMode)
+                result = mapMessagesQuoteModeReplies(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         case .answer:
-            result = mapMessagesCommentModeReplies(messages, chatType: chatType, replyMode: replyMode)
+                result = mapMessagesCommentModeReplies(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         }
 
         return result
     }
 
-    nonisolated static func mapMessagesQuoteModeReplies(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessagesQuoteModeReplies(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode, currentUserID: UUID) -> [MessagesSection] {
         let dates = Set(messages.map({ $0.createdAt.startOfDay() }))
             .sorted()
             .reversed()
@@ -31,7 +31,7 @@ extension ChatView {
             let section = MessagesSection(
                 date: date,
                 // use fake isFirstSection/isLastSection because they are not needed for quote replies
-                rows: wrapSectionMessages(messages.filter({ $0.createdAt.isSameDay(date) }), chatType: chatType, replyMode: replyMode, isFirstSection: false, isLastSection: false)
+                rows: wrapSectionMessages(messages.filter({ $0.createdAt.isSameDay(date) }), chatType: chatType, replyMode: replyMode, isFirstSection: false, isLastSection: false, currentUserID: currentUserID)
             )
             result.append(section)
         }
@@ -39,7 +39,7 @@ extension ChatView {
         return result
     }
 
-    nonisolated static func mapMessagesCommentModeReplies(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode) -> [MessagesSection] {
+    nonisolated static func mapMessagesCommentModeReplies(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode, currentUserID: UUID) -> [MessagesSection] {
         let firstLevelMessages = messages.filter { m in
             (m as? HasReply)?.replyMessage == nil
         }
@@ -66,7 +66,7 @@ extension ChatView {
 
             let isFirstSection = dates.first == date
             let isLastSection = dates.last == date
-            let sectionRows = wrapSectionMessages(dayMessages, chatType: chatType, replyMode: replyMode, isFirstSection: isFirstSection, isLastSection: isLastSection)
+            let sectionRows = wrapSectionMessages(dayMessages, chatType: chatType, replyMode: replyMode, isFirstSection: isFirstSection, isLastSection: isLastSection, currentUserID: currentUserID)
             result.append(MessagesSection(date: date, rows: sectionRows))
         }
 
@@ -82,7 +82,7 @@ extension ChatView {
         }
     }
 
-    nonisolated static private func wrapSectionMessages(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode, isFirstSection: Bool, isLastSection: Bool) -> [MessageRow] {
+    nonisolated static private func wrapSectionMessages(_ messages: [any MessageProtocol], chatType: ChatType, replyMode: ReplyMode, isFirstSection: Bool, isLastSection: Bool, currentUserID: UUID) -> [MessageRow] {
         messages
             .enumerated()
             .map {
@@ -93,8 +93,8 @@ extension ChatView {
 
                 let nextMessageExists = nextMessage != nil
                 let prevMessageExists = prevMessage != nil
-                let nextMessageIsSameUser = nextMessage?.user.id == message.user.id
-                let prevMessageIsSameUser = prevMessage?.user.id == message.user.id
+                let nextMessageIsSameUser = nextMessage?.user(current: currentUserID).id == message.user(current: currentUserID).id
+                let prevMessageIsSameUser = prevMessage?.user(current: currentUserID).id == message.user(current: currentUserID).id
 
                 let positionInUserGroup: PositionInUserGroup
                 if nextMessageExists, nextMessageIsSameUser, prevMessageIsSameUser {

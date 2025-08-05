@@ -7,8 +7,9 @@ import Combine
 import UIKit
 
 @MainActor
-final class ChatViewModel: ObservableObject {
+public final class ChatViewModel: ObservableObject {
 
+    @Published private(set) var currentUserID: UUID = UUID()
     @Published private(set) var fullscreenAttachmentItem: Optional<Attachment> = nil
     @Published var fullscreenAttachmentPresented = false
 
@@ -36,6 +37,10 @@ final class ChatViewModel: ObservableObject {
         fullscreenAttachmentPresented = false
         fullscreenAttachmentItem = nil
     }
+    
+    func setCurrentUserID(_ userID: UUID) {
+        self.currentUserID = userID
+    }
 
     func sendMessage(_ message: DraftMessage) {
         didSendMessage(message)
@@ -52,7 +57,7 @@ final class ChatViewModel: ObservableObject {
         case .copy:
             UIPasteboard.general.string = message.text
         case .reply:
-                inputViewModel?.attachments.replyMessage = message.toReplyMessage(current: message.user.id)
+                inputViewModel?.attachments.replyMessage = message.toReplyMessage(current: currentUserID)
             globalFocusState?.focus = .uuid(inputFieldId)
         case .edit(let saveClosure):
             inputViewModel?.text = message.text

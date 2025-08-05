@@ -7,13 +7,12 @@ import SwiftUI
 
 struct ReactionSelectionView: View {
     
+    @Environment(\.chatViewModel) var viewModel
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     
     static let maxSelectionRowWidth: CGFloat = 400
 
     @StateObject private var keyboardState = KeyboardState()
-
-    @StateObject var viewModel: ChatViewModel
     
     @State private var selectedEmoji: String = ""
     @FocusState private var emojiEntryIsFocused: Bool
@@ -395,7 +394,6 @@ internal struct InteriorRadialShadow: ViewModifier {
 #Preview {
     VStack {
         ReactionSelectionView(
-            viewModel: ChatViewModel(),
             backgroundColor: .gray,
             selectedColor: .blue,
             animation: .linear(duration: 0.2),

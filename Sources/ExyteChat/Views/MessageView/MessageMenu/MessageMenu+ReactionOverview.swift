@@ -7,7 +7,7 @@ import SwiftUI
 
 struct ReactionOverview: View {
     
-    @StateObject var viewModel: ChatViewModel
+    @Environment(\.chatViewModel) var viewModel
     
     let message: any MessageProtocol
     let width: CGFloat
@@ -90,7 +90,7 @@ struct ReactionOverview: View {
     
     private var horizontalOffset: CGFloat {
         guard inScrollView else { return 0 }
-        if message.user.isCurrentUser {
+        if message.user(current: viewModel.currentUserID).isCurrentUser {
             return UIApplication.safeArea.leading
         } else {
             return -UIApplication.safeArea.leading

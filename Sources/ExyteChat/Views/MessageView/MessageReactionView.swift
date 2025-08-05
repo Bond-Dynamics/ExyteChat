@@ -13,7 +13,7 @@ extension MessageView {
         let overflowBubbleText = "+\(message.reactions.count - maxReactions + 1)"
         
         HStack(spacing: -bubbleSize.width / 5) {
-            if !message.user.isCurrentUser {
+            if !message.user(current: viewModel.currentUserID).isCurrentUser {
                 overflowBubbleView(
                     leadingSpacer: true,
                     needsOverflowBubble: preparedReactions.needsOverflowBubble,
@@ -25,11 +25,11 @@ extension MessageView {
             ForEach(Array(preparedReactions.reactions.enumerated()), id: \.element) { index, reaction in
                 ReactionBubble(reaction: reaction, font: Font(font))
                     .transition(.scaleAndFade)
-                    .zIndex(message.user.isCurrentUser ? Double(preparedReactions.reactions.count - index) : Double(index + 1))
+                    .zIndex(message.user(current: viewModel.currentUserID).isCurrentUser ? Double(preparedReactions.reactions.count - index) : Double(index + 1))
                     .sizeGetter($bubbleSize)
             }
             
-            if message.user.isCurrentUser {
+            if message.user(current: viewModel.currentUserID).isCurrentUser {
                 overflowBubbleView(
                     leadingSpacer: false,
                     needsOverflowBubble: preparedReactions.needsOverflowBubble,
@@ -39,7 +39,7 @@ extension MessageView {
             }
         }
         .offset(
-            x: message.user.isCurrentUser ? -(bubbleSize.height / 2) : (bubbleSize.height / 2),
+            x: message.user(current: viewModel.currentUserID) .isCurrentUser ? -(bubbleSize.height / 2) : (bubbleSize.height / 2),
             y: 0
         )
     }
@@ -50,7 +50,7 @@ extension MessageView {
             ReactionBubble(
                 reaction: .init(
                     user: .init(
-                        id: UUID(),
+                        id: viewModel.currentUserID,
                         name: "",
                         avatarURL: nil,
                         isCurrentUser: containsReactionFromCurrentUser
@@ -60,7 +60,7 @@ extension MessageView {
                 ),
                 font: .footnote.weight(.light)
             )
-            .padding(message.user.isCurrentUser ? .trailing : .leading, -3)
+            .padding(message.user(current: viewModel.currentUserID).isCurrentUser ? .trailing : .leading, -3)
         }
     }
     
@@ -92,7 +92,7 @@ extension MessageView {
         if needsOverflowBubble { reactions = Array(reactions.prefix(maxReactions - 1)) }
         
         return .init(
-            reactions: message.user.isCurrentUser ? reactions : reactions.reversed(),
+            reactions: message.user(current: viewModel.currentUserID).isCurrentUser ? reactions : reactions.reversed(),
             needsOverflowBubble: needsOverflowBubble,
             overflowContainsCurrentUser: overflowContainsCurrentUser
         )
