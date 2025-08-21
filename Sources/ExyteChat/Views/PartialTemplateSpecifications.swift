@@ -20,6 +20,10 @@ public extension ChatView where MessageContent == EmptyView {
     ) {
         self.type = chatType
         self.didSendMessage = didSendMessage
+        self.onMessageEdit = nil
+        self._isEditingMessage = .constant(false)
+        self._messageBeingEdited = .constant(nil)
+        self._editingText = .constant("")
         self.reactionDelegate = reactionDelegate
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         self.ids = messages.map { $0.id }
@@ -44,6 +48,10 @@ public extension ChatView where InputViewContent == EmptyView {
          messageMenuAction: MessageMenuActionClosure?) {
         self.type = chatType
         self.didSendMessage = didSendMessage
+        self.onMessageEdit = nil
+        self._isEditingMessage = .constant(false)
+        self._messageBeingEdited = .constant(nil)
+        self._editingText = .constant("")
         self.reactionDelegate = reactionDelegate
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         self.ids = messages.map { $0.id }
@@ -68,6 +76,10 @@ public extension ChatView where MenuAction == DefaultMessageMenuAction {
          inputViewBuilder: @escaping InputViewBuilderClosure) {
         self.type = chatType
         self.didSendMessage = didSendMessage
+        self.onMessageEdit = nil
+        self._isEditingMessage = .constant(false)
+        self._messageBeingEdited = .constant(nil)
+        self._editingText = .constant("")
         self.reactionDelegate = reactionDelegate
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         self.ids = messages.map { $0.id }
@@ -87,10 +99,18 @@ public extension ChatView where MessageContent == EmptyView, InputViewContent ==
          replyMode: ReplyMode = .quote,
          currentUserID: UUID,
          didSendMessage: @escaping (DraftMessage) -> Void,
+         onMessageEdit: ((any MessageProtocol, String) -> Void)? = nil,
+         isEditingMessage: Binding<Bool> = .constant(false),
+         messageBeingEdited: Binding<(any MessageProtocol)?> = .constant(nil),
+         editingText: Binding<String> = .constant(""),
          reactionDelegate: ReactionDelegate? = nil,
          messageMenuAction: MessageMenuActionClosure?) {
         self.type = chatType
         self.didSendMessage = didSendMessage
+        self.onMessageEdit = onMessageEdit
+        self._isEditingMessage = isEditingMessage
+        self._messageBeingEdited = messageBeingEdited
+        self._editingText = editingText
         self.reactionDelegate = reactionDelegate
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         self.ids = messages.map { $0.id }
@@ -113,6 +133,10 @@ public extension ChatView where InputViewContent == EmptyView, MenuAction == Def
          messageBuilder: @escaping MessageBuilderClosure) {
         self.type = chatType
         self.didSendMessage = didSendMessage
+        self.onMessageEdit = nil
+        self._isEditingMessage = .constant(false)
+        self._messageBeingEdited = .constant(nil)
+        self._editingText = .constant("")
         self.reactionDelegate = reactionDelegate
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         self.ids = messages.map { $0.id }
@@ -135,6 +159,10 @@ public extension ChatView where MessageContent == EmptyView, MenuAction == Defau
          inputViewBuilder: @escaping InputViewBuilderClosure) {
         self.type = chatType
         self.didSendMessage = didSendMessage
+        self.onMessageEdit = nil
+        self._isEditingMessage = .constant(false)
+        self._messageBeingEdited = .constant(nil)
+        self._editingText = .constant("")
         self.reactionDelegate = reactionDelegate
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         self.ids = messages.map { $0.id }
@@ -153,12 +181,50 @@ public extension ChatView where MessageContent == EmptyView, InputViewContent ==
          replyMode: ReplyMode = .quote,
          currentUserID: UUID,
          didSendMessage: @escaping (DraftMessage) -> Void,
+         onMessageEdit: ((any MessageProtocol, String) -> Void)? = nil,
+         isEditingMessage: Binding<Bool> = .constant(false),
+         messageBeingEdited: Binding<(any MessageProtocol)?> = .constant(nil),
+         editingText: Binding<String> = .constant(""),
          reactionDelegate: ReactionDelegate? = nil) {
         self.type = chatType
         self.didSendMessage = didSendMessage
+        self.onMessageEdit = onMessageEdit
+        self._isEditingMessage = isEditingMessage
+        self._messageBeingEdited = messageBeingEdited
+        self._editingText = editingText
         self.reactionDelegate = reactionDelegate
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         self.ids = messages.map { $0.id }
+        
+        DispatchQueue.main.async { [self] in
+            self.viewModel.setCurrentUserID(currentUserID)
+        }
+    }
+}
+
+// MARK: - Simplest convenience initializer (for the example usage pattern)
+public extension ChatView where MessageContent == EmptyView, InputViewContent == EmptyView, MenuAction == DefaultMessageMenuAction {
+    
+    init(messages: [MessageData],
+         chatType: ChatType = .conversation,
+         didSendMessage: @escaping (DraftMessage) -> Void,
+         onMessageEdit: ((any MessageProtocol, String) -> Void)? = nil,
+         isEditingMessage: Binding<Bool> = .constant(false),
+         messageBeingEdited: Binding<(any MessageProtocol)?> = .constant(nil),
+         editingText: Binding<String> = .constant("")) {
+        // Extract current user ID from messages
+        let currentUserID = messages.first(where: { $0.user.isCurrentUser })?.user.id ?? UUID()
+        
+        self.type = chatType
+        self.didSendMessage = didSendMessage
+        self.onMessageEdit = onMessageEdit
+        self._isEditingMessage = isEditingMessage
+        self._messageBeingEdited = messageBeingEdited
+        self._editingText = editingText
+        self.reactionDelegate = nil
+        self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: .quote, currentUserID: currentUserID)
+        self.ids = messages.map { $0.id }
+        self.messageMenuAction = nil
         
         DispatchQueue.main.async { [self] in
             self.viewModel.setCurrentUserID(currentUserID)

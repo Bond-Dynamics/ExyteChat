@@ -31,6 +31,7 @@ struct ChatExampleView: View {
             }
         }
         .messageUseMarkdown(true)
+        .setAvailableInputs([.text, .media, .audio, .markdown])
         .setRecorderSettings(recorderSettings)
         .messageReactionDelegate(viewModel)
         .swipeActions(edge: .leading, performsFirstActionWithFullSwipe: true, items: [

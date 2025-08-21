@@ -61,6 +61,7 @@ public enum AvailableInputType: Sendable {
     case media
     case audio
     case giphy
+    case markdown
 }
 
 public struct InputViewAttachments {
@@ -171,13 +172,24 @@ struct InputView: View {
             case .isRecordingTap:
                 recordingInProgress
             default:
-                TextInputView(
-                    text: $viewModel.text,
-                    inputFieldId: inputFieldId,
-                    style: style,
-                    availableInputs: availableInputs,
-                    localization: localization
-                )
+                if isMarkdownAvailable() {
+                    EnhancedTextInputView(
+                        text: $viewModel.text,
+                        inputFieldId: inputFieldId,
+                        style: style,
+                        availableInputs: availableInputs,
+                        localization: localization,
+                        messageStyler: messageStyler
+                    )
+                } else {
+                    TextInputView(
+                        text: $viewModel.text,
+                        inputFieldId: inputFieldId,
+                        style: style,
+                        availableInputs: availableInputs,
+                        localization: localization
+                    )
+                }
             }
         }
         .frame(minHeight: 48)
@@ -593,6 +605,10 @@ struct InputView: View {
     
     private func isMediaAvailable() -> Bool {
         return availableInputs.contains(AvailableInputType.media)
+    }
+    
+    private func isMarkdownAvailable() -> Bool {
+        return availableInputs.contains(AvailableInputType.markdown)
     }
 }
 

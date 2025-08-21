@@ -81,7 +81,13 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     let sections: [MessagesSection]
     let ids: [UUID]
     let didSendMessage: (DraftMessage) -> Void
+    let onMessageEdit: ((any MessageProtocol, String) -> Void)?
     var reactionDelegate: ReactionDelegate?
+    
+    // MARK: - Editing State
+    @Binding var isEditingMessage: Bool
+    @Binding var messageBeingEdited: (any MessageProtocol)?
+    @Binding var editingText: String
 
     // MARK: - View builders
     
@@ -147,10 +153,43 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     @State private var giphyConfigured = false
     @State private var selectedMedia: GPHMedia? = nil
     
+    // MARK: - Editing Methods
+    
+    private func setupEditingState() {
+        if isEditingMessage, let message = messageBeingEdited {
+            inputViewModel.text = editingText
+            inputViewModel.edit { [weak self] newText in
+                self?.handleMessageEdit(message: message, newText: newText)
+            }
+            
+            // Focus the text input when editing starts
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                globalFocusState.focus = .uuid(viewModel.inputFieldId)
+            }
+        } else {
+            inputViewModel.reset()
+        }
+    }
+    
+    private func handleMessageEdit(message: any MessageProtocol, newText: String) {
+        onMessageEdit?(message, newText)
+        resetEditingState()
+    }
+    
+    private func resetEditingState() {
+        isEditingMessage = false
+        messageBeingEdited = nil
+        editingText = ""
+    }
+    
     public init(messages: [any MessageProtocol],
                 chatType: ChatType = .conversation,
                 replyMode: ReplyMode = .quote,
                 didSendMessage: @escaping (DraftMessage) -> Void,
+                onMessageEdit: ((any MessageProtocol, String) -> Void)? = nil,
+                isEditingMessage: Binding<Bool> = .constant(false),
+                messageBeingEdited: Binding<(any MessageProtocol)?> = .constant(nil),
+                editingText: Binding<String> = .constant(""),
                 reactionDelegate: ReactionDelegate? = nil,
                 messageBuilder: @escaping MessageBuilderClosure,
                 inputViewBuilder: @escaping InputViewBuilderClosure,
@@ -159,6 +198,10 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                 currentUserID: UUID) {
         self.type = chatType
         self.didSendMessage = didSendMessage
+        self.onMessageEdit = onMessageEdit
+        self._isEditingMessage = isEditingMessage
+        self._messageBeingEdited = messageBeingEdited
+        self._editingText = editingText
         self.reactionDelegate = reactionDelegate
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
         self.ids = messages.map { $0.id }
@@ -383,31 +426,79 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                     }
                 }
             }
+            
+            // Set up editing state
+            setupEditingState()
+        }
+        .onChange(of: isEditingMessage) { _, isEditing in
+            setupEditingState()
+        }
+        .onChange(of: editingText) { _, newText in
+            if isEditingMessage {
+                inputViewModel.text = newText
+            }
         }
     }
 
     var inputView: some View {
-        Group {
-            if let inputViewBuilder = inputViewBuilder {
-                inputViewBuilder($inputViewModel.text, inputViewModel.attachments, inputViewModel.state, .message, inputViewModel.inputViewAction()) {
-                    globalFocusState.focus = nil
+        VStack(spacing: 0) {
+            // Editing indicator
+            if isEditingMessage {
+                editingIndicator
+            }
+            
+            // Input view
+            Group {
+                if let inputViewBuilder = inputViewBuilder {
+                    inputViewBuilder($inputViewModel.text, inputViewModel.attachments, inputViewModel.state, .message, inputViewModel.inputViewAction()) {
+                        globalFocusState.focus = nil
+                    }
+                } else {
+                    InputView(
+                        viewModel: inputViewModel,
+                        inputFieldId: viewModel.inputFieldId,
+                        style: .message,
+                        availableInputs: availableInputs,
+                        messageStyler: messageStyler,
+                        recorderSettings: recorderSettings,
+                        localization: localization
+                    )
                 }
-            } else {
-                InputView(
-                    viewModel: inputViewModel,
-                    inputFieldId: viewModel.inputFieldId,
-                    style: .message,
-                    availableInputs: availableInputs,
-                    messageStyler: messageStyler,
-                    recorderSettings: recorderSettings,
-                    localization: localization
-                )
             }
         }
         .sizeGetter($inputViewSize)
         .environmentObject(globalFocusState)
         .onAppear(perform: inputViewModel.onStart)
         .onDisappear(perform: inputViewModel.onStop)
+    }
+    
+    var editingIndicator: some View {
+        HStack {
+            Image(systemName: "pencil")
+                .foregroundColor(theme.colors.mainTint)
+                .font(.system(size: 14, weight: .medium))
+            
+            Text("Editing message")
+                .font(.caption)
+                .foregroundColor(theme.colors.mainCaptionText)
+            
+            Spacer()
+            
+            Button(action: resetEditingState) {
+                Image(systemName: "xmark")
+                    .foregroundColor(theme.colors.mainCaptionText)
+                    .font(.system(size: 12, weight: .medium))
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(theme.colors.inputBG.opacity(0.8))
+        .overlay(
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(theme.colors.mainText.opacity(0.1)),
+            alignment: .bottom
+        )
     }
     
     func messageMenu(_ row: MessageRow) -> some View {
