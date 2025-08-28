@@ -26,10 +26,6 @@ public struct ReplyMessage: MessageProtocol, Codable, Identifiable, Hashable, Se
     public var giphyMediaId: String?
     public var recording: Recording?
     public var triggerRedraw: UUID?
-    
-    public func user(current userID: UUID) -> User {
-        user
-    }
 
     public init(
         id: UUID,

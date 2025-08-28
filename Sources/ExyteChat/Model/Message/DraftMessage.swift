@@ -21,10 +21,6 @@ public struct DraftMessage: MessageProtocol, HasReply, Codable, Sendable {
     
     public var triggerRedraw: UUID?
     
-    public func user(current userID: UUID) -> User {
-        user
-    }
-    
     public init(
         id: UUID,
         text: String,

@@ -57,7 +57,7 @@ struct MessageView: View {
         let timeWidth = timeSize.width + 10
         let textPaddings = MessageView.horizontalTextPadding * 2
         let widthWithoutMedia = UIScreen.main.bounds.width
-        - (message.user(current: viewModel.currentUserID).isCurrentUser ? MessageView.horizontalNoAvatarPadding : avatarViewSize.width)
+        - (message.user.isCurrentUser ? MessageView.horizontalNoAvatarPadding : avatarViewSize.width)
         - statusSize.width
         - MessageView.horizontalBubblePadding
         - textPaddings
@@ -100,16 +100,16 @@ struct MessageView: View {
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 0) {
-            if !message.user(current: viewModel.currentUserID).isCurrentUser {
+            if !message.user.isCurrentUser {
                 avatarView
             }
 
-            VStack(alignment: message.user(current: viewModel.currentUserID).isCurrentUser ? .trailing : .leading, spacing: 2) {
+            VStack(alignment: message.user.isCurrentUser ? .trailing : .leading, spacing: 2) {
                 if !isDisplayingMessageMenu, let reply = (message as? HasReply)?.replyMessage?.toMessage() {
                     replyBubbleView(reply)
                         .opacity(theme.style.replyOpacity)
-                        .padding(message.user(current: viewModel.currentUserID).isCurrentUser ? .trailing : .leading, 10)
-                        .overlay(alignment: message.user(current: viewModel.currentUserID).isCurrentUser ? .trailing : .leading) {
+                        .padding(message.user.isCurrentUser ? .trailing : .leading, 10)
+                        .overlay(alignment: message.user.isCurrentUser ? .trailing : .leading) {
                             Capsule()
                                 .foregroundColor(theme.colors.mainTint)
                                 .frame(width: 2)
@@ -119,7 +119,7 @@ struct MessageView: View {
                 bubbleView(message)
             }
 
-            if message.user(current: viewModel.currentUserID).isCurrentUser, let status = (message as? HasStatus)?.status {
+            if message.user.isCurrentUser, let status = (message as? HasStatus)?.status {
                 MessageStatusView(status: status) {
                     if case let .error(draft) = status {
                         viewModel.sendMessage(draft)
@@ -130,16 +130,16 @@ struct MessageView: View {
         }
         .padding(.top, topPadding)
         .padding(.bottom, bottomPadding)
-        .padding(.trailing, message.user(current: viewModel.currentUserID).isCurrentUser ? MessageView.horizontalNoAvatarPadding : 0)
-        .padding(message.user(current: viewModel.currentUserID).isCurrentUser ? .leading : .trailing, MessageView.horizontalBubblePadding)
-        .frame(maxWidth: UIScreen.main.bounds.width, alignment: message.user(current: viewModel.currentUserID).isCurrentUser ? .trailing : .leading)
+        .padding(.trailing, message.user.isCurrentUser ? MessageView.horizontalNoAvatarPadding : 0)
+        .padding(message.user.isCurrentUser ? .leading : .trailing, MessageView.horizontalBubblePadding)
+        .frame(maxWidth: UIScreen.main.bounds.width, alignment: message.user.isCurrentUser ? .trailing : .leading)
     }
 
     @ViewBuilder
     func bubbleView(_ message: any MessageProtocol) -> some View {
         @Bindable var bindableVM = viewModel
         VStack(
-            alignment: message.user(current: viewModel.currentUserID).isCurrentUser ? .leading : .trailing,
+            alignment: message.user.isCurrentUser ? .leading : .trailing,
             spacing: -bubbleSize.height / 3
         ) {
             if !isDisplayingMessageMenu && !message.reactions.isEmpty {
@@ -171,7 +171,7 @@ struct MessageView: View {
                     }
                 }
             }
-            .bubbleBackground(message, theme: theme, currentUserID: viewModel.currentUserID)
+            .bubbleBackground(message, theme: theme, currentUserID: viewModel.currentUser.id)
             .zIndex(0)
         }
         .applyIf(isDisplayingMessageMenu) {
@@ -182,7 +182,7 @@ struct MessageView: View {
     @ViewBuilder
     func replyBubbleView(_ message: Message) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(message.user(current: viewModel.currentUserID).name)
+            Text(message.user.name)
                 .fontWeight(.semibold)
                 .padding(.horizontal, MessageView.horizontalTextPadding)
 
@@ -195,7 +195,7 @@ struct MessageView: View {
             if !message.text.isEmpty {
                 MessageTextView(
                     text: message.text, messageStyler: messageStyler,
-                    userType: message.user(current: viewModel.currentUserID).type, shouldShowLinkPreview: shouldShowLinkPreview,
+                    userType: message.user.type, shouldShowLinkPreview: shouldShowLinkPreview,
                     messageLinkPreviewLimit: messageLinkPreviewLimit
                 )
                 .padding(.horizontal, MessageView.horizontalTextPadding)
@@ -208,17 +208,17 @@ struct MessageView: View {
         .font(.caption2)
         .padding(.vertical, 8)
         .frame(width: message.attachments.isEmpty ? nil : MessageView.widthWithMedia + additionalMediaInset)
-        .bubbleBackground(message, theme: theme, isReply: true, currentUserID: viewModel.currentUserID)
+        .bubbleBackground(message, theme: theme, isReply: true, currentUserID: viewModel.currentUser.id)
     }
 
     @ViewBuilder
     var avatarView: some View {
         Group {
             if showAvatar {
-                AvatarView(url: message.user(current: viewModel.currentUserID).avatarURL, avatarSize: avatarSize)
+                AvatarView(url: message.user.avatarURL, avatarSize: avatarSize)
                     .contentShape(Circle())
                     .onTapGesture {
-                        tapAvatarClosure?(message.user(current: viewModel.currentUserID), message.id)
+                        tapAvatarClosure?(message.user, message.id)
                     }
             } else {
                 Color.clear.viewSize(avatarSize)
@@ -258,7 +258,7 @@ struct MessageView: View {
     func textWithTimeView(_ message: any MessageProtocol) -> some View {
         let messageView = MessageTextView(
             text: message.text, messageStyler: messageStyler,
-            userType: message.user(current: viewModel.currentUserID).type, shouldShowLinkPreview: shouldShowLinkPreview,
+            userType: message.user.type, shouldShowLinkPreview: shouldShowLinkPreview,
             messageLinkPreviewLimit: messageLinkPreviewLimit
         )
         .fixedSize(horizontal: false, vertical: true)
@@ -299,9 +299,9 @@ struct MessageView: View {
     func recordingView(_ recording: Recording) -> some View {
         RecordWaveformWithButtons(
             recording: recording,
-            colorButton: message.user(current: viewModel.currentUserID).isCurrentUser ? theme.colors.messageMyBG : theme.colors.mainBG,
-            colorButtonBg: message.user(current: viewModel.currentUserID).isCurrentUser ? theme.colors.mainBG : theme.colors.messageMyBG,
-            colorWaveform: theme.colors.messageText(message.user(current: viewModel.currentUserID).type)
+            colorButton: message.user.isCurrentUser ? theme.colors.messageMyBG : theme.colors.mainBG,
+            colorButtonBg: message.user.isCurrentUser ? theme.colors.mainBG : theme.colors.messageMyBG,
+            colorWaveform: theme.colors.messageText(message.user.type)
         )
         .padding(.horizontal, MessageView.horizontalTextPadding)
         .padding(.top, 8)
@@ -311,9 +311,9 @@ struct MessageView: View {
         Group {
             if showMessageTimeView {
                 if needsCapsule {
-                    MessageTimeWithCapsuleView(text: message.time, isCurrentUser: message.user(current: viewModel.currentUserID).isCurrentUser, chatTheme: theme)
+                    MessageTimeWithCapsuleView(text: message.time, isCurrentUser: message.user.isCurrentUser, chatTheme: theme)
                 } else {
-                    MessageTimeView(text: message.time, userType: message.user(current: viewModel.currentUserID).type, chatTheme: theme)
+                    MessageTimeView(text: message.time, userType: message.user.type, chatTheme: theme)
                 }
             }
         }
@@ -329,11 +329,11 @@ extension View {
         let additionalMediaInset: CGFloat = message.attachments.count > 1 ? 2 : 0
         self
             .frame(width: message.attachments.isEmpty ? nil : MessageView.widthWithMedia + additionalMediaInset)
-            .foregroundColor(theme.colors.messageText(message.user(current: currentUserID).type))
+            .foregroundColor(theme.colors.messageText(message.user.type))
             .background {
                 if isReply || !message.text.isEmpty || message.recording != nil {
                     RoundedRectangle(cornerRadius: radius)
-                        .foregroundColor(theme.colors.messageBG(message.user(current: currentUserID).type))
+                        .foregroundColor(theme.colors.messageBG(message.user.type))
                         .opacity(isReply ? theme.style.replyOpacity : 1)
                 }
             }

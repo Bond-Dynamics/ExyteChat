@@ -8,10 +8,10 @@
 import Foundation
 
 extension MessageProtocol {
-    func toReplyMessage(current userID: UUID) -> ReplyMessage {
+    func toReplyMessage(current user: User) -> ReplyMessage {
         ReplyMessage(
             id: id,
-            user: user(current: userID),
+            user: user,
             createdAt: createdAt,
             text: text,
             attachments: attachments,

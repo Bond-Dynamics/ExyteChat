@@ -76,7 +76,7 @@ struct EnhancedTextInputView: View {
         guard let textView = textViewRef else { return }
         
         let selectedRange = textView.selectedRange
-        let selectedText = textView.text[selectedRange] ?? ""
+        let selectedText = (textView.text as NSString).substring(with: selectedRange)
         
         if selectedText.isEmpty {
             insertFormattingAtCursor(formatType, textView: textView)
@@ -133,15 +133,3 @@ struct EnhancedTextInputView: View {
     }
 }
 
-extension UITextView {
-    subscript(range: NSRange) -> String? {
-        guard range.location != NSNotFound,
-              range.location + range.length <= text.count else {
-            return nil
-        }
-        
-        let start = text.index(text.startIndex, offsetBy: range.location)
-        let end = text.index(start, offsetBy: range.length)
-        return String(text[start..<end])
-    }
-}

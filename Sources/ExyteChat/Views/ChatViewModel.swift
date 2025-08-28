@@ -10,7 +10,7 @@ import UIKit
 @Observable
 public final class ChatViewModel {
 
-    private(set) var currentUserID: UUID = UUID()
+    private(set) var currentUser: User = User()
     private(set) var fullscreenAttachmentItem: Optional<Attachment> = nil
     var fullscreenAttachmentPresented = false
 
@@ -39,9 +39,9 @@ public final class ChatViewModel {
         fullscreenAttachmentItem = nil
     }
     
-    func setCurrentUserID(_ userID: UUID) {
+    func setCurrentUser(_ user: User) {
         DispatchQueue.main.async { [self] in
-            self.currentUserID = userID
+            self.currentUser = user
         }
     }
 
@@ -60,7 +60,7 @@ public final class ChatViewModel {
         case .copy:
             UIPasteboard.general.string = message.text
         case .reply:
-                inputViewModel?.attachments.replyMessage = message.toReplyMessage(current: currentUserID)
+                inputViewModel?.attachments.replyMessage = message.toReplyMessage(current: currentUser)
             globalFocusState?.focus = .uuid(inputFieldId)
         case .edit(let saveClosure):
             inputViewModel?.text = message.text

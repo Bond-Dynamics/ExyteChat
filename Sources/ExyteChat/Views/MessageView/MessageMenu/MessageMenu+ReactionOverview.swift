@@ -90,7 +90,7 @@ struct ReactionOverview: View {
     
     private var horizontalOffset: CGFloat {
         guard inScrollView else { return 0 }
-        if message.user(current: viewModel.currentUserID).isCurrentUser {
+        if message.user.isCurrentUser {
             return UIApplication.safeArea.leading
         } else {
             return -UIApplication.safeArea.leading

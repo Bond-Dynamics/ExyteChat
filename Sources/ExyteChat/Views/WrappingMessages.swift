@@ -93,8 +93,8 @@ extension ChatView {
 
                 let nextMessageExists = nextMessage != nil
                 let prevMessageExists = prevMessage != nil
-                let nextMessageIsSameUser = nextMessage?.user(current: currentUserID).id == message.user(current: currentUserID).id
-                let prevMessageIsSameUser = prevMessage?.user(current: currentUserID).id == message.user(current: currentUserID).id
+                let nextMessageIsSameUser = nextMessage?.user.id == message.user.id
+                let prevMessageIsSameUser = prevMessage?.user.id == message.user.id
 
                 let positionInUserGroup: PositionInUserGroup
                 if nextMessageExists, nextMessageIsSameUser, prevMessageIsSameUser {

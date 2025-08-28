@@ -77,17 +77,17 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     
     // MARK: - Parameters
     
-    let type: ChatType
-    let sections: [MessagesSection]
-    let ids: [UUID]
-    let didSendMessage: (DraftMessage) -> Void
-    let onMessageEdit: ((any MessageProtocol, String) -> Void)?
+    var type: ChatType
+    var sections: [MessagesSection]
+    var ids: [UUID]
+    var didSendMessage: (DraftMessage) -> Void
+    var onMessageEdit: ((any MessageProtocol, String) -> Void)?
     var reactionDelegate: ReactionDelegate?
     
     // MARK: - Editing State
-    @Binding var isEditingMessage: Bool
-    @Binding var messageBeingEdited: (any MessageProtocol)?
-    @Binding var editingText: String
+    @State private var isEditingMessage: Bool = false
+    @State private var messageBeingEdited: (any MessageProtocol)? = nil
+    @State private var editingText: String = ""
 
     // MARK: - View builders
     
@@ -158,8 +158,8 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     private func setupEditingState() {
         if isEditingMessage, let message = messageBeingEdited {
             inputViewModel.text = editingText
-            inputViewModel.edit { [weak self] newText in
-                self?.handleMessageEdit(message: message, newText: newText)
+            inputViewModel.edit { [self] newText in
+                self.handleMessageEdit(message: message, newText: newText)
             }
             
             // Focus the text input when editing starts
@@ -187,23 +187,17 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                 replyMode: ReplyMode = .quote,
                 didSendMessage: @escaping (DraftMessage) -> Void,
                 onMessageEdit: ((any MessageProtocol, String) -> Void)? = nil,
-                isEditingMessage: Binding<Bool> = .constant(false),
-                messageBeingEdited: Binding<(any MessageProtocol)?> = .constant(nil),
-                editingText: Binding<String> = .constant(""),
                 reactionDelegate: ReactionDelegate? = nil,
                 messageBuilder: @escaping MessageBuilderClosure,
                 inputViewBuilder: @escaping InputViewBuilderClosure,
                 messageMenuAction: MessageMenuActionClosure?,
                 localization: ChatLocalization,
-                currentUserID: UUID) {
+                currentUser: User) {
         self.type = chatType
         self.didSendMessage = didSendMessage
         self.onMessageEdit = onMessageEdit
-        self._isEditingMessage = isEditingMessage
-        self._messageBeingEdited = messageBeingEdited
-        self._editingText = editingText
         self.reactionDelegate = reactionDelegate
-        self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUserID)
+        self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUser.id)
         self.ids = messages.map { $0.id }
         self.messageBuilder = messageBuilder
         self.inputViewBuilder = inputViewBuilder
@@ -537,7 +531,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     private func menuAlignment(_ message: any MessageProtocol, chatType: ChatType) -> MessageMenuAlignment {
         switch chatType {
         case .conversation:
-                return message.user(current: viewModel.currentUserID).isCurrentUser ? .right : .left
+                return message.user.isCurrentUser ? .right : .left
         case .comments:
             return .left
         }
@@ -836,7 +830,7 @@ public extension ChatView {
     let monday = try! Date.iso8601Date.parse("2025-05-12")
     let tuesday = try! Date.iso8601Date.parse("2025-05-13")
 
-    ChatView(messages: [
+    ChatView<EmptyView, EmptyView, DefaultMessageMenuAction, Message>(messages: [
         Message(
             id: UUID(), user: romeo, status: .read, createdAt: monday,
             text: "And I’ll still stay, to have thee still forget"),
@@ -878,5 +872,5 @@ public extension ChatView {
         Message(
             id: UUID(), user: juliet, status: .sent, createdAt: tuesday,
             text: "That I shall say 'Good night' till it be morrow"),
-    ], currentUserID: UUID()) { draft in }
+    ], currentUser: User()) { draft in }
 }

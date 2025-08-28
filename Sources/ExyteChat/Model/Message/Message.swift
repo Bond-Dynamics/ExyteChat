@@ -58,10 +58,6 @@ public struct Message: MessageProtocol, HasReply, Identifiable, Hashable, Sendab
     
     public var triggerRedraw: UUID?
     
-    public func user(current userID: UUID) -> User {
-        user
-    }
-    
     public init(
         id: UUID,
         user: User,
