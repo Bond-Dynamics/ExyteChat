@@ -61,6 +61,7 @@ public enum DefaultMessageMenuAction: MessageMenuAction, Sendable {
         .copy, .reply, .edit(saveClosure: {_ in})
     ]
     
+    @MainActor
     static public func menuItems(for message: Message) -> [DefaultMessageMenuAction] {
         if message.user.isCurrentUser {
             return allCases

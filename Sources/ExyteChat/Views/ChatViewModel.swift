@@ -42,6 +42,7 @@ public final class ChatViewModel {
     func setCurrentUser(_ user: User) {
         DispatchQueue.main.async { [self] in
             self.currentUser = user
+            ChatUserContext.shared.setCurrentUser(user)
         }
     }
 

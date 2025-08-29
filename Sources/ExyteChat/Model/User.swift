@@ -13,7 +13,6 @@ public struct User: Codable, Identifiable, Hashable, Sendable {
     public let name: String
     public let avatarURL: URL?
     public let type: UserType
-    public var isCurrentUser: Bool { type == .current }
     
     public init() {
         self.id = UUID()
@@ -34,5 +33,36 @@ public struct User: Codable, Identifiable, Hashable, Sendable {
         self.name = name
         self.avatarURL = avatarURL
         self.type = type
+    }
+}
+
+extension User {
+    /// Determines if this user is the current user by comparing against the ChatViewModel's current user
+    @MainActor
+    public var isCurrentUser: Bool {
+        // First try to use the global current user context if available
+        if let currentUserId = ChatUserContext.shared.currentUserId {
+            return self.id == currentUserId
+        }
+        // Fallback to legacy UserType-based approach
+        return type == .current
+    }
+}
+
+/// Global context for tracking the current user across the chat system
+@MainActor
+public class ChatUserContext: ObservableObject {
+    public static let shared = ChatUserContext()
+    
+    private(set) var currentUserId: UUID?
+    
+    private init() {}
+    
+    public func setCurrentUser(_ user: User) {
+        currentUserId = user.id
+    }
+    
+    public func clearCurrentUser() {
+        currentUserId = nil
     }
 }
