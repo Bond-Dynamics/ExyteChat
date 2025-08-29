@@ -12,7 +12,7 @@ public struct User: Codable, Identifiable, Hashable, Sendable {
     public let id: UUID
     public let name: String
     public let avatarURL: URL?
-    public let type: UserType
+    public var type: UserType
     public var isCurrentUser: Bool { type == .current }
     
     public init() {

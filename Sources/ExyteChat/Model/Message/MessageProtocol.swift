@@ -9,7 +9,7 @@ import Foundation
 
 public protocol MessageProtocol: Codable, Identifiable {
     var id: UUID { get }
-    var user: User { get set }
+    var user: User { get }
     var text: String { get }
     var createdAt: Date { get }
     var attachments: [Attachment] { get }
