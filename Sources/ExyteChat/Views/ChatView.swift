@@ -83,6 +83,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     var didSendMessage: (DraftMessage) -> Void
     var onMessageEdit: ((any MessageProtocol, String) -> Void)?
     var reactionDelegate: ReactionDelegate?
+    var storedCurrentUser: User?
     
     // MARK: - Editing State
     @State private var isEditingMessage: Bool = false
@@ -203,6 +204,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
         self.inputViewBuilder = inputViewBuilder
         self.messageMenuAction = messageMenuAction
         self.localization = localization
+        self.storedCurrentUser = currentUser
     }
     
     public var body: some View {
@@ -409,6 +411,11 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
             viewModel.didSendMessage = didSendMessage
             viewModel.inputViewModel = inputViewModel
             viewModel.globalFocusState = globalFocusState
+            
+            // Set current user if stored during initialization
+            if let storedUser = storedCurrentUser {
+                viewModel.setCurrentUser(storedUser)
+            }
 
             inputViewModel.didSendMessage = { value in
                 Task { @MainActor in

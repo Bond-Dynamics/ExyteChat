@@ -26,10 +26,7 @@ public extension ChatView where MessageContent == EmptyView {
         self.ids = messages.map { $0.id }
         self.inputViewBuilder = inputViewBuilder
         self.messageMenuAction = messageMenuAction
-        
-        DispatchQueue.main.async { [self] in
-            self.viewModel.setCurrentUser(currentUser)
-        }
+        self.storedCurrentUser = currentUser
     }
 }
 
@@ -51,10 +48,7 @@ public extension ChatView where InputViewContent == EmptyView {
         self.ids = messages.map { $0.id }
         self.messageBuilder = messageBuilder
         self.messageMenuAction = messageMenuAction
-        
-        DispatchQueue.main.async { [self] in
-            self.viewModel.setCurrentUser(currentUser)
-        }
+        self.storedCurrentUser = currentUser
     }
 }
 
@@ -76,10 +70,7 @@ public extension ChatView where MenuAction == DefaultMessageMenuAction {
         self.ids = messages.map { $0.id }
         self.messageBuilder = messageBuilder
         self.inputViewBuilder = inputViewBuilder
-        
-        DispatchQueue.main.async { [self] in
-            self.viewModel.setCurrentUser(currentUser)
-        }
+        self.storedCurrentUser = currentUser
     }
 }
 
@@ -100,10 +91,7 @@ public extension ChatView where MessageContent == EmptyView, InputViewContent ==
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUser.id)
         self.ids = messages.map { $0.id }
         self.messageMenuAction = messageMenuAction
-        
-        DispatchQueue.main.async { [self] in
-            self.viewModel.setCurrentUser(currentUser)
-        }
+        self.storedCurrentUser = currentUser
     }
 }
 
@@ -123,10 +111,7 @@ public extension ChatView where InputViewContent == EmptyView, MenuAction == Def
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUser.id)
         self.ids = messages.map { $0.id }
         self.messageBuilder = messageBuilder
-        
-        DispatchQueue.main.async { [self] in
-            self.viewModel.setCurrentUser(currentUser)
-        }
+        self.storedCurrentUser = currentUser
     }
 }
 
@@ -146,10 +131,7 @@ public extension ChatView where MessageContent == EmptyView, MenuAction == Defau
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUser.id)
         self.ids = messages.map { $0.id }
         self.inputViewBuilder = inputViewBuilder
-        
-        DispatchQueue.main.async { [self] in
-            self.viewModel.setCurrentUser(currentUser)
-        }
+        self.storedCurrentUser = currentUser
     }
 }
 
@@ -168,10 +150,7 @@ public extension ChatView where MessageContent == EmptyView, InputViewContent ==
         self.reactionDelegate = reactionDelegate
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: replyMode, currentUserID: currentUser.id)
         self.ids = messages.map { $0.id }
-        
-        DispatchQueue.main.async { [self] in
-            self.viewModel.setCurrentUser(currentUser)
-        }
+        self.storedCurrentUser = currentUser
     }
 }
 
@@ -193,9 +172,6 @@ public extension ChatView where MessageContent == EmptyView, InputViewContent ==
         self.sections = ChatView.mapMessages(messages, chatType: chatType, replyMode: .quote, currentUserID: currentUser.id)
         self.ids = messages.map { $0.id }
         self.messageMenuAction = nil
-        
-        DispatchQueue.main.async { [self] in
-            self.viewModel.setCurrentUser(currentUser)
-        }
+        self.storedCurrentUser = currentUser
     }
 }
