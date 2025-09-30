@@ -521,7 +521,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                 didReact: reactionClosure(row.message)
             )
         ) {
-            ChatMessageView(
+            ChatMessageView<MessageContent, MenuAction, MessageData>(
                 messageBuilder: messageBuilder, row: row, chatType: type,
                 avatarSize: avatarSize, tapAvatarClosure: nil, messageStyler: messageStyler,
                 shouldShowLinkPreview: shouldShowLinkPreview,

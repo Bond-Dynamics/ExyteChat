@@ -565,7 +565,7 @@ struct UIList<MessageContent: View, InputView: View>: UIViewRepresentable {
 
             let row = sections[indexPath.section].rows[indexPath.row]
             tableViewCell.contentConfiguration = UIHostingConfiguration {
-                ChatMessageView(
+                ChatMessageView<MessageContent, DefaultMessageMenuAction, Message>(
                     messageBuilder: messageBuilder, row: row, chatType: type,
                     avatarSize: avatarSize, tapAvatarClosure: tapAvatarClosure,
                     messageStyler: messageStyler, shouldShowLinkPreview: shouldShowLinkPreview,
