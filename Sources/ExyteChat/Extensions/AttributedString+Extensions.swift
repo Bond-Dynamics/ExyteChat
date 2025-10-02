@@ -7,14 +7,14 @@ import UIKit
 
 extension AttributedString {
 
-    func width(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
+    public func width(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
         let boundingBox = toAttrString(font: font).boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil)
 
         return ceil(boundingBox.width)
     }
 
-    func toAttrString(font: UIFont) -> NSAttributedString {
+    public func toAttrString(font: UIFont) -> NSAttributedString {
         var str = self
         str.setAttributes(AttributeContainer([.font: font]))
         return NSAttributedString(str)
@@ -45,7 +45,7 @@ extension AttributedString {
         return lastLineFragmentRect.maxX
     }
 
-    func numberOfLines(labelWidth: CGFloat, font: UIFont) -> Int {
+    public func numberOfLines(labelWidth: CGFloat, font: UIFont) -> Int {
         let attrString = toAttrString(font: font)
         let availableSize = CGSize(width: labelWidth, height: .infinity)
         let textSize = attrString.boundingRect(with: availableSize, options: .usesLineFragmentOrigin, context: nil)

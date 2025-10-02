@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MessageView: View {
+public struct MessageView: View {
 
     @Environment(\.chatTheme) var theme
     @Environment(\.chatViewModel) var viewModel
@@ -98,7 +98,7 @@ struct MessageView: View {
         return positionInUserGroup.isTop ? 8 : 4
     }
 
-    var body: some View {
+    public var body: some View {
         HStack(alignment: .bottom, spacing: 0) {
             if !message.user.isCurrentUser {
                 avatarView

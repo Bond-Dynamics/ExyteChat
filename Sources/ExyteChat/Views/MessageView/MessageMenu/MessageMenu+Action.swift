@@ -12,13 +12,7 @@ public protocol MessageMenuAction: Equatable, CaseIterable {
     static func menuItems(for message: any MessageProtocol) -> [Self]
 }
 
-extension MessageMenuAction {
-    public static func menuItems(for message: any MessageProtocol) -> [Self] {
-        Self.allCases.map { $0 }
-    }
-}
-
-public enum DefaultMessageMenuAction: MessageMenuAction, Sendable {
+public enum DefaultMessageMenuAction: @MainActor MessageMenuAction, Sendable {
 
     case copy
     case reply
@@ -62,7 +56,7 @@ public enum DefaultMessageMenuAction: MessageMenuAction, Sendable {
     ]
     
     @MainActor
-    static public func menuItems(for message: Message) -> [DefaultMessageMenuAction] {
+    public static func menuItems(for message: any MessageProtocol) -> [DefaultMessageMenuAction] {
         if message.user.isCurrentUser {
             return allCases
         } else {
