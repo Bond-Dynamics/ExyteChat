@@ -215,8 +215,11 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
                 transitionViewState(to: .keyboard)
             }
         }
+        .onChange(of: menuHeight) { oldValue, newValue in
+            handleMenuHeightChange(from: oldValue, to: newValue)
+        }
     }
-    
+
     @MainActor
     private func transitionViewState(to vs: ViewState) {
         guard viewState != vs, viewState != .dismiss, vs != .initial else { return }
@@ -332,6 +335,33 @@ struct MessageMenu<MainButton: View, ActionEnum: MessageMenuAction>: View {
         }
     }
     
+    private func handleMenuHeightChange(from oldValue: CGFloat, to newValue: CGFloat) {
+        guard newValue > oldValue, newValue > 0 else { return }
+        updateMenuLayouts(using: newValue)
+
+        guard viewState == .ready || viewState == .original else { return }
+        let previousState: ViewState = viewState == .ready ? viewState : .prepare
+
+        withAnimation(.easeInOut(duration: animationDuration)) {
+            verticalOffset = calcVertOffset(previousState: previousState)
+        }
+    }
+
+    private func updateMenuLayouts(using measuredHeight: CGFloat) {
+        guard messageFrame != .zero else { return }
+
+        let safeArea = UIApplication.safeArea.top + UIApplication.safeArea.bottom
+        let reactionHeight = reactionSelectionIsVisible ? (reactionSelectionHeight + verticalSpacing + reactionSelectionBottomPadding) : 0
+        let totalMenuHeight = (messageFrame.height + messageTopPadding) + reactionHeight + min(measuredHeight, maxMenuHeight)
+        let overviewHeight = reactionOverviewIsVisible ? reactionOverviewHeight : 0
+
+        if totalMenuHeight + overviewHeight > maxEntireHeight - safeArea {
+            messageMenuStyle = .scrollView(height: maxEntireHeight - safeArea)
+        } else if measuredHeight > maxMenuHeight {
+            menuStyle = .scrollView(height: maxMenuHeight)
+        }
+    }
+
     private func calcVertOffset(previousState: ViewState) -> CGFloat {
         switch viewState {
         case .initial, .prepare:
